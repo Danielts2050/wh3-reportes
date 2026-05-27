@@ -4,27 +4,22 @@
     <meta charset="UTF-8">
     <title>WH3 Reportes</title>
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     @vite([
         'resources/css/app.css',
         'resources/js/app.js'
     ])
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
-
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-    >
-
     <link rel="icon" href="{{ asset('logo_wh3.png') }}">
+
+    <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet">
+
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -39,20 +34,20 @@
         <div class="sidebar-header">
 
             <div class="logo-box">
-                <img src="{{ asset('logo_wh3.png') }}" alt="WH3 Logo">
-            </div>
 
-            <div>
-
-                <h4>
-                    Sistema WH3
-                </h4>
-
-                <small>
-                    Reportes Inteligentes
-                </small>
+                <img
+                src="{{ asset('logo_wh3.png') }}"
+                alt="WH3">
 
             </div>
+
+            <h3>
+                Sistema WH3
+            </h3>
+
+            <small>
+                Reportes Inteligentes
+            </small>
 
         </div>
 
@@ -61,53 +56,36 @@
 
             <a
             href="/resumen-paletas"
-            class="
-            nav-item
-            {{ request()->is('resumen-paletas*') ? 'active':'' }}
-            "
+            class="nav-item {{ request()->is('resumen-paletas*') ? 'active':'' }}"
             >
 
-            <i class="fa-solid fa-boxes-stacked"></i>
+                <i class="fa-solid fa-boxes-stacked"></i>
 
-            <span>
-            Resumen Paletas
-            </span>
+                Resumen Paletas
 
             </a>
-
 
 
             <a
             href="/distribucion-lotes"
-            class="
-            nav-item
-            {{ request()->is('distribucion-lotes*') ? 'active':'' }}
-            "
+            class="nav-item {{ request()->is('distribucion-lotes*') ? 'active':'' }}"
             >
 
-            <i class="fa-solid fa-table-cells-large"></i>
+                <i class="fa-solid fa-table-cells-large"></i>
 
-            <span>
-            Distribución Lotes
-            </span>
+                Distribución Lotes
 
             </a>
 
 
-
             <a
             href="/reporte"
-            class="
-            nav-item
-            {{ request()->is('reporte*') ? 'active':'' }}
-            "
+            class="nav-item {{ request()->is('reporte*') ? 'active':'' }}"
             >
 
-            <i class="fa-solid fa-chart-column"></i>
+                <i class="fa-solid fa-chart-column"></i>
 
-            <span>
-            Reporte WH3
-            </span>
+                Reporte WH3
 
             </a>
 
@@ -118,31 +96,28 @@
 
     <main class="content-wrapper">
 
-       <header class="hero-section">
+        <header class="hero-section">
 
             <h1>
-            @yield('page-title', 'Sistema WH3 Reportes')
+                @yield('page-title')
             </h1>
 
             <p>
-                @yield('page-description', 'Procesamiento operativo y análisis inteligente')
+                @yield('page-description')
             </p>
 
         </header>
 
 
-        <main class="content-area">
+        <section class="content-area">
 
             @yield('content')
 
-        </main>
+        </section>
 
     </main>
 
 </div>
-
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 @yield('scripts')
 
