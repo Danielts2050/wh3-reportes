@@ -1,0 +1,146 @@
+.module-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.module-title h2 {
+    font-weight: 800;
+    color: #2f2854;
+    margin: 0;
+}
+
+.module-title p {
+    margin: 4px 0 0;
+    color: #6b7280;
+}
+
+.form-grid {
+    display: grid;
+    gap: 20px;
+}
+
+.action-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.preview-card {
+    margin-top: 28px;
+}
+
+.preview-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.excel-preview-wrapper {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 20px;
+    overflow-x: auto;
+    border: 1px solid #ebe8f4;
+}
+
+.excel-preview-table {
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    background: #ffffff;
+    min-width: 640px;
+}
+
+.excel-preview-table th {
+    border: 1px solid #000;
+    padding: 9px 18px;
+    background: #fff200;
+    text-align: center;
+    font-weight: 800;
+}
+
+.excel-preview-table td {
+    border: 1px solid #000;
+    padding: 9px 18px;
+    text-align: center;
+}
+
+.excel-preview-table .total-cell {
+    background: #fff200;
+    font-weight: 800;
+}
+
+.excel-preview-table .reference-cell {
+    background: #fff200;
+    font-weight: 800;
+    text-align: center;
+    vertical-align: middle;
+    min-width: 160px;
+}
+
+.helper-card {
+    background: linear-gradient(135deg, #f7f4ff, #ffffff);
+    border: 1px solid #ebe8f4;
+    border-radius: 20px;
+    padding: 18px;
+}
+
+.helper-card strong {
+    color: #2f2854;
+}
+
+@media (max-width: 768px) {
+    .module-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .preview-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+.processing-overlay {
+    position: relative;
+}
+
+.processing-overlay::after {
+    content: "Procesando información...";
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,.72);
+    backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2f2854;
+    font-weight: 800;
+    font-size: 16px;
+    border-radius: 22px;
+    z-index: 5;
+}
+
+.btn-loading {
+    pointer-events: none;
+    opacity: .85;
+}
+
+.btn-loading i {
+    animation: softSpin 1s linear infinite;
+}
+
+@keyframes softSpin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

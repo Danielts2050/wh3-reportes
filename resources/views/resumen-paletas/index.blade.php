@@ -1,109 +1,217 @@
 @extends('layouts.app')
+@section('page-title', 'Resumen de Paletas')
+@section('page-description', 'Agrupa materiales, calcula paletas y genera exportación operativa.')
 
 @section('content')
 
-<div class="card shadow-sm">
-    <div class="card-header bg-warning fw-bold">
+
+
+
+<div class="card corporate-card">
+
+    <div class="card-header bg-warning">
+
         Resumen de Paletas por Material
+
     </div>
 
     <div class="card-body">
 
-        <form method="POST" action="/resumen-paletas/procesar">
+        <div class="helper-card mb-4">
+
+            <strong>Formato esperado:</strong>
+
+            Material | Cantidad
+
+            <br><br>
+
+            Puedes copiar directamente desde Excel y pegarlo aquí.
+
+        </div>
+
+
+        <form
+        method="POST"
+        action="/resumen-paletas/procesar"
+        id="form-procesar"
+        >
+
             @csrf
 
-            <div class="mb-3">
-                <label class="form-label fw-bold">Referencia</label>
-                <input 
-                    type="text" 
-                    name="referencia" 
+            <div class="form-grid">
+
+                <div>
+
+                    <label class="form-label fw-bold">
+
+                        Referencia
+
+                    </label>
+
+                    <input
+                    type="text"
+                    name="referencia"
                     class="form-control"
-                    value="{{ old('referencia', $referencia) }}"
-                    placeholder="Ejemplo: REF-001"
-                >
-            </div>
+                    placeholder="Ej: REF-001"
+                    value="{{ old('referencia',$referencia ?? '') }}"
+                    >
 
-            <div class="mb-3">
-                <label class="form-label fw-bold">
-                    Pega los datos desde Excel: Material y Cantidad
-                </label>
+                </div>
 
-                <textarea 
-                    name="datos" 
-                    rows="10" 
+
+                <div>
+
+                    <label class="form-label fw-bold">
+
+                        Datos desde Excel
+
+                    </label>
+
+                    <textarea
                     class="form-control font-monospace"
-                    placeholder="Material	Cantidad"
-                >{{ old('datos', $datos) }}</textarea>
+                    rows="10"
+                    name="datos"
+                    placeholder="Material    Cantidad"
+                    >{{ old('datos',$datos ?? '') }}</textarea>
 
-                @error('datos')
-                    <div class="text-danger mt-2">{{ $message }}</div>
-                @enderror
+                </div>
+
             </div>
 
-            <button class="btn btn-success">
-                Procesar
-            </button>
+
+            <div class="action-row">
+
+                <button
+                class="btn btn-success"
+                id="btnProcesar"
+                >
+
+                    <i class="fa-solid fa-gears"></i>
+
+                    Procesar
+
+                </button>
+
+            </div>
+
         </form>
 
     </div>
+
 </div>
 
+
 @if($resultado)
-    <div class="card shadow-sm mt-4">
-        <div class="card-header bg-dark text-white fw-bold">
-            Resultado
+
+<div class="card corporate-card preview-card">
+
+    <div class="card-header preview-toolbar">
+
+        <span class="fw-bold">
+
+            Resultado generado
+
+        </span>
+
+        <div class="d-flex gap-2 flex-wrap">
+
+            <button
+            type="button"
+            class="btn btn-dark"
+            onclick="copiarTablaConEstilos()"
+            >
+
+                <i class="fa-solid fa-copy"></i>
+
+                Copiar
+
+            </button>
+
+
+            <form
+            method="POST"
+            action="/resumen-paletas/exportar"
+            >
+
+                @csrf
+
+                <input
+                type="hidden"
+                name="resultado"
+                value='@json($resultado)'
+                >
+
+                <button
+                class="btn btn-primary"
+                id="btnExportar"
+                >
+
+                    <i class="fa-solid fa-file-excel"></i>
+
+                    Exportar
+
+                </button>
+
+            </form>
+
         </div>
 
-        <div class="card-body table-responsive">
-            <table class="table table-bordered table-hover align-middle">
-                <thead class="table-warning text-center">
-                    <tr>
-                        <th>Material</th>
-                        <th>Cantidad</th>
-                        <th>Paletas</th>
-                        <th>Referencia</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @foreach($resultado as $fila)
-                        <tr class="{{ $fila['Material'] === 'TOTAL' ? 'table-warning fw-bold' : '' }}">
-                            <td>{{ $fila['Material'] }}</td>
-                            <td class="text-end">{{ number_format($fila['Cantidad'], 0) }}</td>
-                            <td class="text-center">{{ $fila['Paletas'] }}</td>
-                            <td>{{ $fila['Referencia'] }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
     </div>
 
-    @if($resultado)
+    <div class="card-body">
 
-<form
-method="POST"
-action="/resumen-paletas/exportar"
-class="mt-3">
+        <div
+        id="tabla-copiable"
+        class="excel-preview-wrapper"
+        >
 
-@csrf
+            @include(
+            'resumen-paletas.excel-preview',
+            ['resultado'=>$resultado]
+            )
 
-<input
-type="hidden"
-name="resultado"
-value='@json($resultado)'>
+        </div>
 
-<button
-class="btn btn-primary">
+    </div>
 
-Exportar Excel
-
-</button>
-
-</form>
+</div>
 
 @endif
-    
-@endif
+
+@endsection
+
+
+@section('scripts')
+
+<script>
+
+document
+.getElementById('form-procesar')
+?.addEventListener(
+'submit',
+()=>{
+
+notifyInfo(
+'Procesando información...'
+);
+
+}
+);
+
+
+document
+.getElementById('btnExportar')
+?.addEventListener(
+'click',
+()=>{
+
+notifySuccess(
+'Generando Excel...'
+);
+
+}
+);
+
+</script>
 
 @endsection

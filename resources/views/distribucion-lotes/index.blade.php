@@ -1,4 +1,6 @@
 @extends('layouts.app')
+@section('page-title', 'Distribución de Lotes')
+@section('page-description', 'Clasifica materiales por lotes y genera una vista organizada para exportar.')
 
 @section('content')
 
