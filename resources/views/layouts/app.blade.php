@@ -6,13 +6,6 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    @vite([
-        'resources/css/app.css',
-        'resources/js/app.js'
-    ])
-
-    <link rel="icon" href="{{ asset('logo_wh3.png') }}">
-
     <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
     rel="stylesheet">
@@ -23,6 +16,12 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    @vite([
+        'resources/css/app.css',
+        'resources/js/app.js'
+    ])
+
+    <link rel="icon" href="{{ asset('logo_wh3.png') }}">
 </head>
 
 <body>
