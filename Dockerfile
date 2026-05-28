@@ -17,6 +17,12 @@ RUN composer install --no-dev --optimize-autoloader
 RUN npm install
 RUN npm run build
 
+RUN php artisan view:clear
+RUN php artisan config:clear
+RUN php artisan cache:clear
+RUN php artisan config:cache
+RUN php artisan view:cache
+
 RUN chown -R www-data:www-data storage bootstrap/cache
 
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
