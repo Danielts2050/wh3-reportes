@@ -78,7 +78,7 @@
 
 
             <a
-            href="/reporte"
+            href="#"
             class="nav-item {{ request()->is('reporte*') ? 'active':'' }}"
             >
 
