@@ -44,9 +44,9 @@
                 Sistema WH3
             </h3>
 
-            <small>
+            {{-- <small>
                 Reportes Inteligentes
-            </small>
+            </small> --}}
 
         </div>
 
@@ -85,6 +85,17 @@
                 <i class="fa-solid fa-chart-column"></i>
 
                 Reporte WH3
+
+            </a>
+
+            <a
+                href="/horas-extras"
+                class="nav-item {{ request()->is('horas-extras*') ? 'active':'' }}"
+                >
+
+                    <i class="fa-solid fa-clock"></i>
+
+                    Horas Extras
 
             </a>
 

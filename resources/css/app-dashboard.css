@@ -258,3 +258,13 @@ font-family:
 "Segoe UI"!important;
 
 }
+
+.metric-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}

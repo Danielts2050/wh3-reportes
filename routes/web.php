@@ -3,6 +3,7 @@
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\ResumenPaletasController;
 use App\Http\Controllers\DistribucionLotesController;
+use App\Http\Controllers\HorasExtrasController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -23,3 +24,9 @@ Route::post(
 Route::get('/distribucion-lotes', [DistribucionLotesController::class, 'index']);
 Route::post('/distribucion-lotes/procesar', [DistribucionLotesController::class, 'procesar']);
 Route::post('/distribucion-lotes/exportar', [DistribucionLotesController::class, 'exportar']);
+
+
+Route::get('/horas-extras', [HorasExtrasController::class, 'index']);
+Route::post('/horas-extras', [HorasExtrasController::class, 'store']);
+Route::put('/horas-extras/{id}', [HorasExtrasController::class, 'update']);
+Route::delete('/horas-extras/{id}', [HorasExtrasController::class, 'destroy']);
