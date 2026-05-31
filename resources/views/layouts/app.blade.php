@@ -32,97 +32,101 @@
 
         <div class="sidebar-header">
 
+           
             <div class="logo-box">
-
-                <img
-                src="{{ asset('logo_wh3.png') }}"
-                alt="WH3">
-
+                <img src="{{ asset('logo_wh3.png') }}" alt="WH3">
             </div>
 
-            <h3>
-                Sistema WH3
-            </h3>
+            <h3>Sistema WH3</h3>
 
-            {{-- <small>
-                Reportes Inteligentes
-            </small> --}}
 
         </div>
 
-
         <nav class="sidebar-nav">
 
-            <a
-            href="/resumen-paletas"
-            class="nav-item {{ request()->is('resumen-paletas*') ? 'active':'' }}"
-            >
-
+            <a href="/resumen-paletas"
+               class="nav-item {{ request()->is('resumen-paletas*') ? 'active':'' }}">
                 <i class="fa-solid fa-boxes-stacked"></i>
-
                 Resumen Paletas
-
             </a>
 
-
-            <a
-            href="/distribucion-lotes"
-            class="nav-item {{ request()->is('distribucion-lotes*') ? 'active':'' }}"
-            >
-
+            <a href="/distribucion-lotes"
+               class="nav-item {{ request()->is('distribucion-lotes*') ? 'active':'' }}">
                 <i class="fa-solid fa-table-cells-large"></i>
-
                 Distribución Lotes
-
             </a>
 
-
-            <a
-            href="#"
-            class="nav-item {{ request()->is('reporte*') ? 'active':'' }}"
-            >
-
+            <a href="/reporte"
+               class="nav-item {{ request()->is('reporte*') ? 'active':'' }}">
                 <i class="fa-solid fa-chart-column"></i>
-
                 Reporte WH3
-
             </a>
 
-            <a
-                href="/horas-extras"
-                class="nav-item {{ request()->is('horas-extras*') ? 'active':'' }}"
-                >
-
-                    <i class="fa-solid fa-clock"></i>
-
-                    Horas Extras
-
+            <a href="/horas-extras"
+               class="nav-item {{ request()->is('horas-extras*') ? 'active':'' }}">
+                <i class="fa-solid fa-clock"></i>
+                Horas Extras
             </a>
 
         </nav>
 
-    </aside>
+        @auth
 
+    <form
+        method="POST"
+        action="{{ route('logout') }}"
+        class="sidebar-logout-form"
+    >
+        @csrf
+
+        <button type="submit" class="sidebar-logout-button">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            Cerrar Sesión
+
+        </button>
+
+    </form>
+
+@endauth
+
+    </aside>
 
     <main class="content-wrapper">
 
         <header class="hero-section">
 
-            <h1>
-                @yield('page-title')
-            </h1>
+    <div class="hero-content">
 
-            <p>
-                @yield('page-description')
-            </p>
+        <div>
+            <h1>@yield('page-title', 'WH3 Reportes')</h1>
+            <p>@yield('page-description', 'Procesamiento operativo y análisis inteligente')</p>
+        </div>
 
-        </header>
+        @auth
+            <div class="hero-user-card">
 
+                <div class="hero-user-icon">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+
+                <div>
+                    <strong>{{ auth()->user()->name }}</strong>
+                    <small>
+                        {{ auth()->user()->role->name ?? 'Usuario' }}
+                    </small>
+                </div>
+
+            </div>
+        @endauth
+
+    </div>
+
+</header>
 
         <section class="content-area">
-
             @yield('content')
-
         </section>
 
     </main>

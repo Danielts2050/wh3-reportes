@@ -283,10 +283,29 @@ Registro y seguimiento de horas extras del personal.
 
     <div class="card-body table-responsive">
 
-        <table class="table table-bordered align-middle">
+        <div class="d-flex gap-2 mb-3 flex-wrap">
+
+    <a
+        href="/horas-extras/exportar?{{ http_build_query(request()->query()) }}"
+        class="btn btn-primary"
+    >
+        <i class="fa-solid fa-file-excel"></i>
+        Exportar Excel
+    </a>
+
+</div>
+
+        <table
+            id="tabla-horas-extras"
+            class="table table-bordered align-middle"
+        >
 
             <thead class="table-light">
                 <tr>
+                    @if($isGerente)
+                        <th>Supervisor</th>
+                    @endif
+
                     <th>Empleado</th>
                     <th>Código</th>
                     <th>Horas</th>
@@ -300,6 +319,10 @@ Registro y seguimiento de horas extras del personal.
                 @forelse($entries as $entry)
 
                     <tr>
+                        @if($isGerente)
+                            <td>{{ $entry->user->name ?? 'Sin supervisor' }}</td>
+                        @endif
+
                         <td>{{ $entry->employee_name }}</td>
                         <td>{{ $entry->employee_code }}</td>
                         <td>{{ number_format($entry->hours, 2) }}</td>
@@ -352,9 +375,7 @@ Registro y seguimiento de horas extras del personal.
                 @empty
 
                     <tr>
-                        <td colspan="5" class="text-center text-muted py-4">
-                            No hay registros todavía.
-                        </td>
+                        <td colspan="{{ $isGerente ? 6 : 5 }}" class="text-center text-muted py-4">
                     </tr>
 
                 @endforelse
