@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 
-mkdir -p /var/www/html/database
+touch /tmp/database.sqlite
 
-if [ ! -f /var/www/html/database/database.sqlite ]; then
-    touch /var/www/html/database/database.sqlite
-fi
+chmod 777 /tmp/database.sqlite
 
 php artisan migrate --force
 php artisan db:seed --force
