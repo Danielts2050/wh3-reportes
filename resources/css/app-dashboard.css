@@ -526,3 +526,56 @@ font-family:
 .hero-user-card small {
     opacity: .75;
 }
+
+.dashboard-bar-item {
+    margin-bottom: 18px;
+}
+
+.dashboard-bar-item strong {
+    color: #2f2854;
+}
+
+.dashboard-bar-item span {
+    font-weight: 700;
+    color: #111827;
+}
+
+.progress {
+    height: 10px;
+    border-radius: 999px;
+    background: #e9e6f5;
+    overflow: hidden;
+}
+
+.progress-bar {
+    border-radius: 999px;
+}
+
+.top-employee-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.top-employee-item:last-child {
+    border-bottom: none;
+}
+
+.top-employee-item strong {
+    display: block;
+    color: #2f2854;
+}
+
+.top-employee-item small {
+    display: block;
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.top-employee-item span {
+    font-weight: 800;
+    color: #111827;
+}

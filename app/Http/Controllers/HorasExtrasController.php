@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class HorasExtrasController extends Controller
 {
-  public function index(Request $request)
+    public function index(Request $request)
 {
     $user = Auth::user();
 
@@ -91,6 +91,45 @@ class HorasExtrasController extends Controller
         ->sortByDesc('hours')
         ->first();
 
+    $horasPorSupervisor = $entries
+        ->groupBy('user_id')
+        ->map(function ($items) {
+            return [
+                'supervisor' => $items->first()->user->name ?? 'Sin supervisor',
+                'horas' => $items->sum('hours'),
+            ];
+        })
+        ->sortByDesc('horas')
+        ->values();
+
+    $horasPorEmpleado = $entries
+        ->groupBy('employee_code')
+        ->map(function ($items) {
+            return [
+                'empleado' => $items->first()->employee_name,
+                'codigo' => $items->first()->employee_code,
+                'horas' => $items->sum('hours'),
+            ];
+        })
+        ->sortByDesc('horas')
+        ->values();
+
+    $horasPorMes = $entries
+        ->groupBy(function ($entry) {
+            return \Carbon\Carbon::parse($entry->work_date)->format('Y-m');
+        })
+        ->map(function ($items, $month) {
+            return [
+                'mes' => \Carbon\Carbon::parse($month . '-01')->format('M Y'),
+                'horas' => $items->sum('hours'),
+            ];
+        })
+        ->values();
+
+    $topEmpleados = $horasPorEmpleado
+        ->take(5)
+        ->values();
+
     $supervisores = \App\Models\User::whereHas('role', function ($q) {
             $q->where('name', 'supervisor');
         })
@@ -111,6 +150,11 @@ class HorasExtrasController extends Controller
         'promedioHoras' => $promedioHoras,
 
         'topEmployee' => $topEmployee,
+
+        'horasPorSupervisor' => $horasPorSupervisor,
+        'horasPorEmpleado' => $horasPorEmpleado,
+        'horasPorMes' => $horasPorMes,
+        'topEmpleados' => $topEmpleados,
 
         'supervisores' => $supervisores,
 

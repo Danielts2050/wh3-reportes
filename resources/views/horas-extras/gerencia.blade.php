@@ -74,6 +74,150 @@ Vista consolidada de horas extras registradas por todos los supervisores.
 
 </div>
 
+<div class="row g-4 mb-4">
+
+    <div class="col-md-6">
+        <div class="card corporate-card h-100">
+            <div class="card-header">
+                Top Supervisores
+            </div>
+
+            <div class="card-body">
+                @forelse($horasPorSupervisor->take(5) as $item)
+
+                    <div class="dashboard-bar-item">
+
+                        <div class="d-flex justify-content-between mb-1">
+                            <strong>{{ $item['supervisor'] }}</strong>
+                            <span>{{ number_format($item['horas'], 2) }} h</span>
+                        </div>
+
+                        <div class="progress">
+                            <div
+                                class="progress-bar bg-primary"
+                                style="width: {{ $totalHoras > 0 ? ($item['horas'] / $totalHoras) * 100 : 0 }}%"
+                            ></div>
+                        </div>
+
+                    </div>
+
+                @empty
+
+                    <p class="text-muted mb-0">
+                        No hay datos disponibles.
+                    </p>
+
+                @endforelse
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-6">
+        <div class="card corporate-card h-100">
+            <div class="card-header">
+                Top Empleados
+            </div>
+
+            <div class="card-body">
+                @forelse($topEmpleados as $item)
+
+                    <div class="top-employee-item">
+
+                        <div>
+                            <strong>{{ $item['empleado'] }}</strong>
+                            <small>Código: {{ $item['codigo'] }}</small>
+                        </div>
+
+                        <span>{{ number_format($item['horas'], 2) }} h</span>
+
+                    </div>
+
+                @empty
+
+                    <p class="text-muted mb-0">
+                        No hay empleados para mostrar.
+                    </p>
+
+                @endforelse
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="row g-4 mb-4">
+
+    <div class="col-md-6">
+        <div class="card corporate-card h-100">
+            <div class="card-header">
+                Gráfico Mensual
+            </div>
+
+            <div class="card-body">
+                @forelse($horasPorMes as $item)
+
+                    <div class="dashboard-bar-item">
+
+                        <div class="d-flex justify-content-between mb-1">
+                            <strong>{{ $item['mes'] }}</strong>
+                            <span>{{ number_format($item['horas'], 2) }} h</span>
+                        </div>
+
+                        <div class="progress">
+                            <div
+                                class="progress-bar bg-success"
+                                style="width: {{ $totalHoras > 0 ? ($item['horas'] / $totalHoras) * 100 : 0 }}%"
+                            ></div>
+                        </div>
+
+                    </div>
+
+                @empty
+
+                    <p class="text-muted mb-0">
+                        No hay datos mensuales.
+                    </p>
+
+                @endforelse
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-6">
+        <div class="card corporate-card h-100">
+            <div class="card-header">
+                Horas por Empleado
+            </div>
+
+            <div class="card-body">
+                @forelse($horasPorEmpleado->take(10) as $item)
+
+                    <div class="top-employee-item">
+
+                        <div>
+                            <strong>{{ $item['empleado'] }}</strong>
+                            <small>Código: {{ $item['codigo'] }}</small>
+                        </div>
+
+                        <span>{{ number_format($item['horas'], 2) }} h</span>
+
+                    </div>
+
+                @empty
+
+                    <p class="text-muted mb-0">
+                        No hay datos por empleado.
+                    </p>
+
+                @endforelse
+            </div>
+        </div>
+    </div>
+
+</div>
 
 <div class="card corporate-card mb-4">
 
