@@ -29,7 +29,7 @@ Route::get('/distribucion-lotes', [DistribucionLotesController::class, 'index'])
 Route::post('/distribucion-lotes/procesar', [DistribucionLotesController::class, 'procesar']);
 Route::post('/distribucion-lotes/exportar', [DistribucionLotesController::class, 'exportar']);
 
-// Si todavía no está listo, déjalo comentado.
+// rutas de reportes.
 // Route::get('/reporte', [ReporteController::class, 'index']);
 // Route::post('/reporte/procesar', [ReporteController::class, 'procesar']);
 
