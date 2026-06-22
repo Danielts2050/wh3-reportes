@@ -4,8 +4,8 @@
 
 @section('content')
 
-<div class="card shadow-sm">
-    <div class="card-header bg-warning fw-bold">
+<div class="card corporate-card">
+    <div class="card-header" style="background:linear-gradient(135deg,var(--purple-700),var(--purple-500));color:#fff;">
         Distribución por Lotes
     </div>
 
@@ -15,7 +15,7 @@
             @csrf
 
             <div class="mb-3">
-                <label class="form-label fw-bold">
+                <label class="form-label">
                     Pega los datos desde Excel:
                     Material, Lotes, localidad, Cantidad, N.Lotes
                 </label>
@@ -42,14 +42,14 @@
 
 @if(count($lotes) > 0 || count($general) > 0)
 
-<div class="card shadow-sm mt-4">
-    <div class="card-header bg-dark text-white fw-bold">
+<div class="card corporate-card mt-4">
+    <div class="card-header" style="background:var(--purple-700);color:#fff;">
         Resultado
     </div>
 
     <div class="card-body">
 
-        <ul class="nav nav-tabs" role="tablist">
+        <ul class="nav nav-tabs" role="tablist" style="border-bottom-color:var(--purple-200);">
             @foreach($lotes as $numero => $filas)
                 <li class="nav-item">
                     <button 
@@ -73,7 +73,7 @@
             </li>
         </ul>
 
-        <div class="tab-content border border-top-0 p-3">
+        <div class="tab-content p-3" style="border:1px solid var(--purple-200);border-top:0;border-radius:0 0 var(--radius-md) var(--radius-md);">
 
             @foreach($lotes as $numero => $filas)
                 <div 

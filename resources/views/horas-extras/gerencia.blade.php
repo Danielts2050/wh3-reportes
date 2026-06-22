@@ -368,10 +368,10 @@ Vista consolidada de horas extras registradas por todos los supervisores.
 
         <table
             id="tabla-horas-extras"
-            class="table table-bordered align-middle"
+            class="table align-middle"
         >
 
-            <thead class="table-light">
+            <thead>
                 <tr>
                     <th>Supervisor</th>
                     <th>Empleado</th>

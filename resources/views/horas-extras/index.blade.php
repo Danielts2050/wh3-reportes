@@ -20,7 +20,7 @@ Registro y seguimiento de horas extras del personal.
 
 <div class="card corporate-card mb-4">
 
-    <div class="card-header bg-primary text-white">
+    <div class="card-header" style="background:linear-gradient(135deg,var(--purple-700),var(--purple-500));color:#fff;">
         Nueva Hora Extra
     </div>
 
@@ -297,10 +297,10 @@ Registro y seguimiento de horas extras del personal.
 
         <table
             id="tabla-horas-extras"
-            class="table table-bordered align-middle"
+            class="table align-middle"
         >
 
-            <thead class="table-light">
+            <thead>
                 <tr>
                     @if($isGerente)
                         <th>Supervisor</th>

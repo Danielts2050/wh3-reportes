@@ -3,6 +3,7 @@
 use App\Http\Controllers\DistribucionLotesController;
 use App\Http\Controllers\HorasExtrasController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\KpiCumplimientoPlanController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\ResumenPaletasController;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,10 @@ Route::post('/resumen-paletas/exportar', [ResumenPaletasController::class, 'expo
 Route::get('/distribucion-lotes', [DistribucionLotesController::class, 'index']);
 Route::post('/distribucion-lotes/procesar', [DistribucionLotesController::class, 'procesar']);
 Route::post('/distribucion-lotes/exportar', [DistribucionLotesController::class, 'exportar']);
+
+Route::get('/kpi-cumplimiento-plan', [KpiCumplimientoPlanController::class, 'index']);
+Route::post('/kpi-cumplimiento-plan/procesar', [KpiCumplimientoPlanController::class, 'procesar']);
+Route::post('/kpi-cumplimiento-plan/exportar-pdf', [KpiCumplimientoPlanController::class, 'exportarPdf']);
 
 // rutas de reportes.
 // Route::get('/reporte', [ReporteController::class, 'index']);

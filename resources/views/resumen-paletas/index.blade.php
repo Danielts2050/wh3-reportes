@@ -9,7 +9,7 @@
 
 <div class="card corporate-card">
 
-    <div class="card-header bg-warning">
+    <div class="card-header" style="background:linear-gradient(135deg,var(--purple-700),var(--purple-500));color:#fff;">
 
         Resumen de Paletas por Material
 

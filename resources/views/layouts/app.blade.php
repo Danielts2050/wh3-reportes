@@ -6,6 +6,10 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
     rel="stylesheet">
@@ -31,16 +35,23 @@
     <aside class="sidebar">
 
         <div class="sidebar-header">
-
-           
             <div class="logo-box">
                 <img src="{{ asset('logo_wh3.png') }}" alt="WH3">
             </div>
-
             <h3>Sistema WH3</h3>
-
-
         </div>
+
+        @auth
+        <div class="sidebar-user">
+            <div class="sidebar-user-icon">
+                <i class="fa-solid fa-user-tie"></i>
+            </div>
+            <div class="sidebar-user-info">
+                <strong>{{ auth()->user()->name }}</strong>
+                <small>{{ auth()->user()->role->name ?? 'Usuario' }}</small>
+            </div>
+        </div>
+        @endauth
 
         <nav class="sidebar-nav">
 
@@ -56,10 +67,10 @@
                 Distribución Lotes
             </a>
 
-            <a href="/reporte"
-               class="nav-item {{ request()->is('reporte*') ? 'active':'' }}">
-                <i class="fa-solid fa-chart-column"></i>
-                Reporte WH3
+            <a href="/kpi-cumplimiento-plan"
+               class="nav-item {{ request()->is('kpi-cumplimiento-plan*') ? 'active':'' }}">
+                <i class="fa-solid fa-bullseye"></i>
+                KPI Cumplimiento
             </a>
 
             <a href="/horas-extras"
