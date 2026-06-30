@@ -381,6 +381,8 @@ body {
     font-weight: 700;
     padding: 16px 24px;
     font-size: 15px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--gray-100);
 }
 
 .card-body {
@@ -406,6 +408,35 @@ body {
     color: var(--purple-700);
     border-color: var(--purple-200) var(--purple-200) #fff;
     font-weight: 700;
+}
+
+/* =============================================
+   ALERTS
+   ============================================= */
+.alert {
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+}
+
+.alert-info {
+    background: var(--purple-50);
+    color: var(--purple-800);
+}
+
+.alert-warning {
+    background: var(--yellow-100);
+    color: #92400e;
+}
+
+.alert-success {
+    background: var(--green-100);
+    color: var(--green-700);
+}
+
+.alert-danger {
+    background: var(--red-100);
+    color: var(--red-700);
 }
 
 /* =============================================
@@ -458,7 +489,6 @@ textarea.form-control {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    border: none;
 }
 
 .btn-sm {
@@ -479,6 +509,7 @@ textarea.form-control {
 .btn-primary {
     background: var(--purple-700);
     color: #fff;
+    border: none;
 }
 
 .btn-primary:hover {
@@ -489,6 +520,7 @@ textarea.form-control {
 .btn-success {
     background: var(--green-500);
     color: #fff;
+    border: none;
 }
 
 .btn-success:hover {
@@ -499,6 +531,7 @@ textarea.form-control {
 .btn-danger {
     background: var(--red-500);
     color: #fff;
+    border: none;
 }
 
 .btn-danger:hover {
@@ -509,6 +542,7 @@ textarea.form-control {
 .btn-dark {
     background: var(--gray-800);
     color: #fff;
+    border: none;
 }
 
 .btn-dark:hover {
@@ -519,6 +553,7 @@ textarea.form-control {
 .btn-warning {
     background: var(--yellow-500);
     color: #1a1130;
+    border: none;
 }
 
 .btn-warning:hover {
@@ -530,7 +565,7 @@ textarea.form-control {
    TABLES
    ============================================= */
 .table {
-    margin-bottom: 0;
+    margin-bottom: 8px;
     font-size: 13px;
 }
 
@@ -558,6 +593,12 @@ textarea.form-control {
 
 .table tbody tr:hover {
     background: var(--purple-50);
+}
+
+/* Allow Bootstrap table-* variants to keep their colors */
+.table-warning thead th {
+    background: var(--yellow-100) !important;
+    color: #92400e !important;
 }
 
 .table-bordered {

@@ -37,7 +37,7 @@ Registro y seguimiento de horas extras del personal.
             <input type="hidden" name="_method" id="formMethod" value="POST">
 
             <div class="col-md-4">
-                <label class="form-label fw-bold">
+                <label class="form-label">
                     Empleado
                 </label>
 
@@ -52,7 +52,7 @@ Registro y seguimiento de horas extras del personal.
             </div>
 
             <div class="col-md-2">
-                <label class="form-label fw-bold">
+                <label class="form-label">
                     Código
                 </label>
 
@@ -67,7 +67,7 @@ Registro y seguimiento de horas extras del personal.
             </div>
 
             <div class="col-md-2">
-                <label class="form-label fw-bold">
+                <label class="form-label">
                     Horas
                 </label>
 
@@ -84,7 +84,7 @@ Registro y seguimiento de horas extras del personal.
             </div>
 
             <div class="col-md-2">
-                <label class="form-label fw-bold">
+                <label class="form-label">
                     Fecha
                 </label>
 
@@ -193,13 +193,9 @@ Registro y seguimiento de horas extras del personal.
         Mis Registros
     </div>
 
-    <div class="card corporate-card mb-4">
-
-    <div class="card-header">
-        Filtros de búsqueda
-    </div>
-
     <div class="card-body">
+
+        <h6 style="font-weight:700;color:var(--purple-700);margin-bottom:12px;font-size:13px;text-transform:uppercase;letter-spacing:.4px;">Filtros de búsqueda</h6>
 
         <form
             method="GET"
@@ -208,7 +204,7 @@ Registro y seguimiento de horas extras del personal.
         >
 
             <div class="col-md-3">
-                <label class="form-label fw-bold">
+                <label class="form-label">
                     Empleado
                 </label>
 
@@ -222,7 +218,7 @@ Registro y seguimiento de horas extras del personal.
             </div>
 
             <div class="col-md-2">
-                <label class="form-label fw-bold">
+                <label class="form-label">
                     Código
                 </label>
 
@@ -236,7 +232,7 @@ Registro y seguimiento de horas extras del personal.
             </div>
 
             <div class="col-md-2">
-                <label class="form-label fw-bold">
+                <label class="form-label">
                     Desde
                 </label>
 
@@ -249,7 +245,7 @@ Registro y seguimiento de horas extras del personal.
             </div>
 
             <div class="col-md-2">
-                <label class="form-label fw-bold">
+                <label class="form-label">
                     Hasta
                 </label>
 
@@ -278,8 +274,6 @@ Registro y seguimiento de horas extras del personal.
         </form>
 
     </div>
-
-</div>
 
     <div class="card-body table-responsive">
 
@@ -419,8 +413,6 @@ function editarRegistro(id, employeeName, employeeCode, hours, workDate) {
         top: 0,
         behavior: 'smooth'
     });
-
-    notifyInfo('Modo edición activado');
 }
 
 
