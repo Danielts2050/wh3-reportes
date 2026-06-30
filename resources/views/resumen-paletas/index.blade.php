@@ -17,6 +17,29 @@
 
     <div class="card-body">
 
+        <form
+        method="POST"
+        action="/resumen-paletas/procesar"
+        id="form-procesar"
+        >
+
+            @csrf
+
+            <div class="action-row mb-3" style="justify-content:flex-end;">
+
+                <button
+                class="btn btn-success"
+                id="btnProcesar"
+                >
+
+                    <i class="fa-solid fa-gears"></i>
+
+                    Procesar
+
+                </button>
+
+            </div>
+
         <div class="helper-card mb-4">
 
             <strong>Formato esperado:</strong>
@@ -29,20 +52,11 @@
 
         </div>
 
-
-        <form
-        method="POST"
-        action="/resumen-paletas/procesar"
-        id="form-procesar"
-        >
-
-            @csrf
-
             <div class="form-grid">
 
                 <div>
 
-                    <label class="form-label fw-bold">
+                    <label class="form-label">
 
                         Referencia
 
@@ -61,7 +75,7 @@
 
                 <div>
 
-                    <label class="form-label fw-bold">
+                    <label class="form-label">
 
                         Datos desde Excel
 
@@ -75,22 +89,6 @@
                     >{{ old('datos',$datos ?? '') }}</textarea>
 
                 </div>
-
-            </div>
-
-
-            <div class="action-row">
-
-                <button
-                class="btn btn-success"
-                id="btnProcesar"
-                >
-
-                    <i class="fa-solid fa-gears"></i>
-
-                    Procesar
-
-                </button>
 
             </div>
 
