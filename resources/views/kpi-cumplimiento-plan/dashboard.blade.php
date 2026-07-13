@@ -193,9 +193,7 @@
                     <th>Cant. Requerida</th>
                     <th>Cant. Entregada</th>
                     <th>Diferencia</th>
-                    <th>Status</th>
                     <th>Clasificación KPI</th>
-                    <th>Afecta</th>
                     <th>Comentario</th>
                 </tr>
             </thead>
@@ -208,7 +206,6 @@
                     <td class="text-end">{{ number_format($item['cantidad_requerida'], 0) }}</td>
                     <td class="text-end">{{ number_format($item['cantidad_enviada'], 0) }}</td>
                     <td class="text-end {{ $item['diferencia'] > 0 ? 'kpi-text-negative' : '' }}">{{ number_format($item['diferencia'], 0) }}</td>
-                    <td class="text-center">{{ $item['estado_original'] ?? '—' }}</td>
                     <td>
                         @php
                             $badgeClass = match($item['clasificacion_kpi']) {
@@ -224,7 +221,6 @@
                             {{ $item['clasificacion_kpi'] }}
                         </span>
                     </td>
-                    <td class="text-center">{{ $item['afecta_kpi'] }}</td>
                     <td class="text-muted small">{{ $item['comentario_causa'] }}</td>
                 </tr>
                 @endif
@@ -252,9 +248,7 @@
                     <th>Cant. Requerida</th>
                     <th>Cant. Entregada</th>
                     <th>Diferencia</th>
-                    <th>Status</th>
                     <th>Clasificación KPI</th>
-                    <th>Afecta</th>
                     <th>Comentario</th>
                 </tr>
             </thead>
@@ -266,7 +260,6 @@
                     <td class="text-end">{{ number_format($item['cantidad_requerida'], 0) }}</td>
                     <td class="text-end">{{ number_format($item['cantidad_enviada'], 0) }}</td>
                     <td class="text-end kpi-text-negative">{{ number_format($item['diferencia'], 0) }}</td>
-                    <td class="text-center">{{ $item['estado_original'] }}</td>
                     <td>
                         @php
                             $badgeClass = match($item['clasificacion_kpi']) {
@@ -279,7 +272,6 @@
                             {{ $item['clasificacion_kpi'] }}
                         </span>
                     </td>
-                    <td class="text-center">{{ $item['afecta_kpi'] }}</td>
                     <td class="text-muted small">{{ $item['comentario_causa'] }}</td>
                 </tr>
                 @endforeach

@@ -248,9 +248,7 @@
                 <th>Req.</th>
                 <th>Entr.</th>
                 <th>Dif.</th>
-                <th>St.</th>
                 <th>KPI</th>
-                <th>¿Afecta?</th>
             </tr>
         </thead>
         <tbody>
@@ -262,7 +260,6 @@
                 <td class="text-end">{{ number_format($item['cantidad_requerida'], 0) }}</td>
                 <td class="text-end">{{ number_format($item['cantidad_enviada'], 0) }}</td>
                 <td class="text-end {{ $item['diferencia'] > 0 ? 'text-negative' : '' }}">{{ number_format($item['diferencia'], 0) }}</td>
-                <td>{{ $item['estado_original'] ?? '—' }}</td>
                 <td>
                     @php
                         $badgePdf = match($item['clasificacion_kpi']) {
@@ -276,14 +273,13 @@
                     @endphp
                     <span class="badge {{ $badgePdf }}">{{ $item['clasificacion_kpi'] }}</span>
                 </td>
-                <td>{{ $item['afecta_kpi'] }}</td>
             </tr>
             @endif
             @endforeach
         </tbody>
     </table>
 
-    {{-- Tabla de ítems sin inventario (estado 0 o 1) para PDF --}}
+    {{-- Tabla de ítems sin inventario --}}
     @php
         $itemsSinStock = array_filter($items, fn($i) => $i['estado_original'] === '0' || $i['estado_original'] === '1');
     @endphp
@@ -300,9 +296,7 @@
                 <th>Req.</th>
                 <th>Entr.</th>
                 <th>Dif.</th>
-                <th>St.</th>
                 <th>KPI</th>
-                <th>¿Afecta?</th>
             </tr>
         </thead>
         <tbody>
@@ -313,14 +307,12 @@
                 <td class="text-end">{{ number_format($item['cantidad_requerida'], 0) }}</td>
                 <td class="text-end">{{ number_format($item['cantidad_enviada'], 0) }}</td>
                 <td class="text-end text-negative">{{ number_format($item['diferencia'], 0) }}</td>
-                <td>{{ $item['estado_original'] }}</td>
                 <td>
                     @php
                         $badgePdf = $item['clasificacion_kpi'] === 'Fuera de Inventario' ? 'badge-red' : 'badge-orange';
                     @endphp
                     <span class="badge {{ $badgePdf }}">{{ $item['clasificacion_kpi'] }}</span>
                 </td>
-                <td>{{ $item['afecta_kpi'] }}</td>
             </tr>
             @endforeach
         </tbody>
