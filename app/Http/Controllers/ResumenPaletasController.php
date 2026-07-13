@@ -157,7 +157,30 @@ class ResumenPaletasController extends Controller
     private function limpiarNumero($valor)
     {
         $valor = trim($valor);
-        $valor = str_replace(',', '', $valor);
+        if ($valor === '') return 0;
+
+        $ultimoPunto = strrpos($valor, '.');
+        $ultimaComa = strrpos($valor, ',');
+
+        if ($ultimoPunto !== false && $ultimaComa !== false) {
+            if ($ultimaComa > $ultimoPunto) {
+                $valor = str_replace('.', '', $valor);
+                $valor = str_replace(',', '.', $valor);
+            } else {
+                $valor = str_replace(',', '', $valor);
+            }
+        } elseif ($ultimoPunto !== false) {
+            if (strlen(substr($valor, $ultimoPunto + 1)) === 3) {
+                $valor = str_replace('.', '', $valor);
+            }
+        } elseif ($ultimaComa !== false) {
+            $despues = substr($valor, $ultimaComa + 1);
+            if (strlen($despues) <= 2 && is_numeric($despues)) {
+                $valor = str_replace(',', '.', $valor);
+            } else {
+                $valor = str_replace(',', '', $valor);
+            }
+        }
 
         return is_numeric($valor) ? (float) $valor : 0;
     }
