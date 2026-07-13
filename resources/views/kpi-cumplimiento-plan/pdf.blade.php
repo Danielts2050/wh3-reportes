@@ -255,6 +255,7 @@
         </thead>
         <tbody>
             @foreach($items as $item)
+            @if($item['estado_original'] !== '0' && $item['estado_original'] !== '1')
             <tr>
                 <td>{{ $item['codigo'] }}</td>
                 <td style="text-align:left;">{{ $item['descripcion'] }}</td>
@@ -277,9 +278,54 @@
                 </td>
                 <td>{{ $item['afecta_kpi'] }}</td>
             </tr>
+            @endif
             @endforeach
         </tbody>
     </table>
+
+    {{-- Tabla de ítems sin inventario (estado 0 o 1) para PDF --}}
+    @php
+        $itemsSinStock = array_filter($items, fn($i) => $i['estado_original'] === '0' || $i['estado_original'] === '1');
+    @endphp
+    @if(count($itemsSinStock) > 0)
+    <div class="section-title" style="margin-top:18px;border:none;font-size:8pt;padding:4px 8px;background:#fff3e0;color:#92400e;border-radius:4px;">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        Nota importante: En la siguiente tabla se detallan los materiales que no pudieron ser despachados debido a la falta de inventario.
+    </div>
+    <table class="detalle" style="margin-top:8px;">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Descripción</th>
+                <th>Req.</th>
+                <th>Entr.</th>
+                <th>Dif.</th>
+                <th>St.</th>
+                <th>KPI</th>
+                <th>¿Afecta?</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($itemsSinStock as $item)
+            <tr>
+                <td>{{ $item['codigo'] }}</td>
+                <td style="text-align:left;">{{ $item['descripcion'] }}</td>
+                <td class="text-end">{{ number_format($item['cantidad_requerida'], 0) }}</td>
+                <td class="text-end">{{ number_format($item['cantidad_enviada'], 0) }}</td>
+                <td class="text-end text-negative">{{ number_format($item['diferencia'], 0) }}</td>
+                <td>{{ $item['estado_original'] }}</td>
+                <td>
+                    @php
+                        $badgePdf = $item['clasificacion_kpi'] === 'Fuera de Inventario' ? 'badge-red' : 'badge-orange';
+                    @endphp
+                    <span class="badge {{ $badgePdf }}">{{ $item['clasificacion_kpi'] }}</span>
+                </td>
+                <td>{{ $item['afecta_kpi'] }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+    @endif
 
     {{-- Observaciones --}}
     <div class="section-title">OBSERVACIONES GENERALES</div>

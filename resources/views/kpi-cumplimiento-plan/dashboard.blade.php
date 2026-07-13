@@ -182,6 +182,8 @@
         <span class="kpi-badge-item kpi-badge-total"><i class="fa-solid fa-cubes"></i> {{ $total_items_plan }} Total</span>
     </div>
 
+    {{-- Tabla de ítems válidos (sin estado 0 ni 1) --}}
+    <h6 style="padding:12px 20px 6px;font-size:13px;font-weight:700;color:var(--purple-700);margin:0;">Ítems considerados para el KPI</h6>
     <div class="table-responsive">
         <table class="kpi-table">
             <thead>
@@ -199,6 +201,7 @@
             </thead>
             <tbody>
                 @foreach($items as $item)
+                @if($item['estado_original'] !== '0' && $item['estado_original'] !== '1')
                 <tr>
                     <td class="font-monospace">{{ $item['codigo'] }}</td>
                     <td>{{ $item['descripcion'] }}</td>
@@ -224,10 +227,66 @@
                     <td class="text-center">{{ $item['afecta_kpi'] }}</td>
                     <td class="text-muted small">{{ $item['comentario_causa'] }}</td>
                 </tr>
+                @endif
                 @endforeach
             </tbody>
         </table>
     </div>
+
+    {{-- Tabla de ítems con estado 0 o 1 --}}
+    @php
+        $itemsSinStock = array_filter($items, fn($i) => $i['estado_original'] === '0' || $i['estado_original'] === '1');
+    @endphp
+    @if(count($itemsSinStock) > 0)
+    <div class="alert alert-warning" style="border-radius:0;margin:16px 20px 8px;font-size:13px;padding:12px 16px;">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <strong>Nota importante:</strong> En la siguiente tabla se detallan los materiales que no pudieron ser despachados debido a la falta de inventario.
+    </div>
+    <h6 style="padding:0 20px 6px;font-size:13px;font-weight:700;color:var(--red-700);margin:0;">Ítems sin inventario (excluidos del KPI)</h6>
+    <div class="table-responsive" style="padding-bottom:16px;">
+        <table class="kpi-table">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Descripción</th>
+                    <th>Cant. Requerida</th>
+                    <th>Cant. Entregada</th>
+                    <th>Diferencia</th>
+                    <th>Status</th>
+                    <th>Clasificación KPI</th>
+                    <th>Afecta</th>
+                    <th>Comentario</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($itemsSinStock as $item)
+                <tr>
+                    <td class="font-monospace">{{ $item['codigo'] }}</td>
+                    <td>{{ $item['descripcion'] }}</td>
+                    <td class="text-end">{{ number_format($item['cantidad_requerida'], 0) }}</td>
+                    <td class="text-end">{{ number_format($item['cantidad_enviada'], 0) }}</td>
+                    <td class="text-end kpi-text-negative">{{ number_format($item['diferencia'], 0) }}</td>
+                    <td class="text-center">{{ $item['estado_original'] }}</td>
+                    <td>
+                        @php
+                            $badgeClass = match($item['clasificacion_kpi']) {
+                                'Fuera de Inventario' => 'kpi-badge-fuera-inventario',
+                                'Agotado' => 'kpi-badge-agotado',
+                                default => 'kpi-badge-total'
+                            };
+                        @endphp
+                        <span class="kpi-badge-item {{ $badgeClass }}" style="font-size:11px;padding:3px 10px;">
+                            {{ $item['clasificacion_kpi'] }}
+                        </span>
+                    </td>
+                    <td class="text-center">{{ $item['afecta_kpi'] }}</td>
+                    <td class="text-muted small">{{ $item['comentario_causa'] }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+    @endif
 </div>
 
 {{-- G) Gráficos Inferiores --}}
