@@ -75,54 +75,59 @@ class KpiCumplimientoPlanController extends Controller
 
     public function exportarPdf(Request $request)
     {
-        $request->validate([
-            'datos' => 'required|string',
-            'fecha_plan' => 'required|date',
-            'contenedores_completados' => 'required|integer|min:0|max:8',
-            'observaciones' => 'nullable|string|max:1000',
-        ]);
+        try {
+            $request->validate([
+                'datos' => 'required|string',
+                'fecha_plan' => 'required|date',
+                'contenedores_completados' => 'required|integer|min:0|max:8',
+                'observaciones' => 'nullable|string|max:1000',
+            ]);
 
-        $datos = $request->input('datos');
-        $fechaPlan = $request->input('fecha_plan');
-        $contenedoresCompletados = (int) $request->input('contenedores_completados');
-        $observaciones = $request->input('observaciones', '');
+            $datos = $request->input('datos');
+            $fechaPlan = $request->input('fecha_plan');
+            $contenedoresCompletados = (int) $request->input('contenedores_completados');
+            $observaciones = $request->input('observaciones', '');
 
-        $metricas = $this->kpiService->procesar($datos);
+            $metricas = $this->kpiService->procesar($datos);
 
-        $comentarioAutomatico = $this->comentarioService->generar(
-            $metricas,
-            $contenedoresCompletados
-        );
+            $comentarioAutomatico = $this->comentarioService->generar(
+                $metricas,
+                $contenedoresCompletados
+            );
 
-        $contenedoresPlanificados = 8;
-        $contenedoresNoCompletados = $contenedoresPlanificados - $contenedoresCompletados;
-        $capacidadOperativa = $contenedoresPlanificados > 0
-            ? round(($contenedoresCompletados / $contenedoresPlanificados) * 100, 2)
-            : 0;
+            $contenedoresPlanificados = 8;
+            $contenedoresNoCompletados = $contenedoresPlanificados - $contenedoresCompletados;
+            $capacidadOperativa = $contenedoresPlanificados > 0
+                ? round(($contenedoresCompletados / $contenedoresPlanificados) * 100, 2)
+                : 0;
 
-        $estadoDia = $contenedoresCompletados >= $contenedoresPlanificados ? 'Completo' : 'Incompleto';
+            $estadoDia = $contenedoresCompletados >= $contenedoresPlanificados ? 'Completo' : 'Incompleto';
 
-        $observacionesGenerales = $this->generarObservaciones($metricas, $contenedoresCompletados, $contenedoresPlanificados);
+            $observacionesGenerales = $this->generarObservaciones($metricas, $contenedoresCompletados, $contenedoresPlanificados);
 
-        $pdfData = array_merge($metricas, [
-            'fecha_plan' => $fechaPlan,
-            'fecha_generacion' => now()->format('d/m/Y H:i'),
-            'contenedores_planificados' => $contenedoresPlanificados,
-            'contenedores_completados' => $contenedoresCompletados,
-            'contenedores_no_completados' => $contenedoresNoCompletados,
-            'capacidad_operativa' => $capacidadOperativa,
-            'estado_dia' => $estadoDia,
-            'comentario_automatico' => $comentarioAutomatico,
-            'observaciones' => $observaciones,
-            'observaciones_generales' => $observacionesGenerales,
-        ]);
+            $pdfData = array_merge($metricas, [
+                'fecha_plan' => $fechaPlan,
+                'fecha_generacion' => now()->format('d/m/Y H:i'),
+                'contenedores_planificados' => $contenedoresPlanificados,
+                'contenedores_completados' => $contenedoresCompletados,
+                'contenedores_no_completados' => $contenedoresNoCompletados,
+                'capacidad_operativa' => $capacidadOperativa,
+                'estado_dia' => $estadoDia,
+                'comentario_automatico' => $comentarioAutomatico,
+                'observaciones' => $observaciones,
+                'observaciones_generales' => $observacionesGenerales,
+            ]);
 
-        $pdf = Pdf::loadView('kpi-cumplimiento-plan.pdf', $pdfData)
-            ->setPaper('letter', 'portrait');
+            $pdf = Pdf::loadView('kpi-cumplimiento-plan.pdf', $pdfData)
+                ->setPaper('letter', 'portrait');
 
-        $nombreArchivo = 'reporte-kpi-' . $fechaPlan . '.pdf';
+            $nombreArchivo = 'reporte-kpi-' . $fechaPlan . '.pdf';
 
-        return $pdf->download($nombreArchivo);
+            return $pdf->download($nombreArchivo);
+        } catch (\Throwable $e) {
+            return response("Error al generar PDF:\n" . $e->getMessage() . "\n\n" . $e->getTraceAsString(), 500)
+                ->header('Content-Type', 'text/plain');
+        }
     }
 
     private function generarObservaciones(array $metricas, int $completados, int $planificados): array

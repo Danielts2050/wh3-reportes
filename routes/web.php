@@ -34,6 +34,16 @@ Route::get('/kpi-cumplimiento-plan', [KpiCumplimientoPlanController::class, 'ind
 Route::post('/kpi-cumplimiento-plan/procesar', [KpiCumplimientoPlanController::class, 'procesar']);
 Route::post('/kpi-cumplimiento-plan/exportar-pdf', [KpiCumplimientoPlanController::class, 'exportarPdf']);
 
+Route::get('/test-pdf', function () {
+    try {
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML('<h1>Test PDF</h1><p>DomPDF funciona correctamente en Render.</p>');
+        return $pdf->download('test.pdf');
+    } catch (\Throwable $e) {
+        return response("Error test-pdf:\n" . $e->getMessage() . "\n\n" . $e->getTraceAsString(), 500)
+            ->header('Content-Type', 'text/plain');
+    }
+});
+
 // rutas de reportes.
 // Route::get('/reporte', [ReporteController::class, 'index']);
 // Route::post('/reporte/procesar', [ReporteController::class, 'procesar']);
