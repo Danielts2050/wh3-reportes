@@ -1,0 +1,221 @@
+/* =========================================
+   Planificador de Carga – Módulo Drag & Drop
+   ========================================= */
+
+:root {
+    --plan-card-border: 3px;
+    --plan-card-radius: 10px;
+}
+
+/* ─── Toolbar ─── */
+.plan-toolbar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; flex-wrap: wrap; gap: 8px;
+}
+.plan-toolbar-title { font-size: 1.1rem; font-weight: 700; color: var(--purple-900); }
+.plan-toolbar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ─── Stats Bar ─── */
+.plan-stats {
+    display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
+}
+.plan-stat {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 10px 16px;
+    text-align: center; flex: 1; min-width: 120px;
+}
+.plan-stat .num { font-size: 1.3rem; font-weight: 800; color: var(--purple-800); display: block; }
+.plan-stat .lbl { font-size: .7rem; color: var(--gray-500); text-transform: uppercase; }
+
+/* ─── Board Layout ─── */
+.plan-board {
+    display: grid; grid-template-columns: 320px 1fr; gap: 16px;
+    min-height: 600px;
+}
+
+/* ─── Materiales Panel ─── */
+.plan-materiales {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 12px; overflow-y: auto;
+    max-height: 800px;
+}
+.plan-materiales-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px; gap: 8px;
+}
+.plan-materiales-header h3 { font-size: .9rem; font-weight: 700; margin: 0; color: var(--purple-900); }
+.plan-busqueda {
+    width: 100%; padding: 8px 10px; border: 1px solid var(--border);
+    border-radius: var(--radius); font-size: .8rem; margin-bottom: 10px;
+    box-sizing: border-box; outline: none; transition: border-color .15s;
+}
+.plan-busqueda:focus { border-color: var(--purple-500); box-shadow: 0 0 0 2px var(--purple-100); }
+.plan-toggle-agotados {
+    font-size: .7rem; color: var(--purple-600); cursor: pointer;
+    background: none; border: none; text-decoration: underline;
+}
+
+/* ─── Material Card ─── */
+.plan-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: var(--plan-card-border) solid var(--gray-300);
+    border-radius: var(--plan-card-radius); padding: 8px 10px;
+    margin-bottom: 6px; cursor: grab; transition: all .15s;
+    user-select: none; font-size: .78rem;
+}
+.plan-card:hover { box-shadow: 0 2px 6px rgba(0,0,0,.08); transform: translateY(-1px); }
+.plan-card:active { cursor: grabbing; }
+.plan-card.dragging { opacity: .4; }
+.plan-card .mat-codigo { font-weight: 700; color: var(--purple-800); font-size: .85rem; }
+.plan-card .mat-detalle { display: flex; gap: 10px; margin-top: 4px; color: var(--gray-600); flex-wrap: wrap; }
+.plan-card .mat-detalle span { white-space: nowrap; }
+.plan-card .mat-detalle .val { font-weight: 600; color: var(--gray-800); }
+
+/* Estados */
+.plan-card.est-disponible { border-left-color: #28a745; }
+.plan-card.est-parcial { border-left-color: #ffc107; }
+.plan-card.est-agotado { border-left-color: #dc3545; background: #fff5f5; }
+.plan-card.est-completo { border-left-color: #6c757d; opacity: .55; }
+.plan-card.est-completo:hover { transform: none; box-shadow: none; cursor: default; }
+
+/* ─── Contenedores Grid ─── */
+.plan-contenedores {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+}
+.plan-contenedor {
+    background: var(--surface); border: 2px dashed var(--border);
+    border-radius: var(--radius-lg); padding: 10px; min-height: 200px;
+    transition: all .15s; display: flex; flex-direction: column;
+}
+.plan-contenedor.drag-over {
+    border-color: var(--purple-500); background: var(--purple-50);
+    box-shadow: 0 0 0 3px var(--purple-100);
+}
+.plan-contenedor-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 6px; gap: 4px;
+}
+.plan-contenedor-nombre {
+    font-size: .8rem; font-weight: 700; color: var(--purple-800);
+    background: none; border: none; outline: none; width: 100px;
+    padding: 2px 4px; border-radius: 4px;
+}
+.plan-contenedor-nombre:focus { background: var(--purple-50); }
+.plan-contenedor-cap {
+    font-size: .7rem; color: var(--gray-500);
+    display: flex; align-items: center; gap: 4px;
+}
+.plan-contenedor-cap input {
+    width: 36px; padding: 2px 4px; border: 1px solid var(--border);
+    border-radius: 4px; font-size: .7rem; text-align: center;
+}
+
+/* ─── Barra de Progreso ─── */
+.plan-progress {
+    height: 10px; background: var(--gray-100); border-radius: 5px;
+    overflow: hidden; margin-bottom: 6px; position: relative;
+}
+.plan-progress-fill {
+    height: 100%; border-radius: 5px; transition: width .3s ease;
+    background: var(--purple-500);
+}
+.plan-progress-fill.warning { background: #ffc107; }
+.plan-progress-fill.danger { background: #dc3545; }
+.plan-progress-text {
+    font-size: .65rem; color: var(--gray-500); text-align: right;
+}
+
+/* ─── Items dentro del contenedor ─── */
+.plan-contenedor-items {
+    flex: 1; overflow-y: auto; min-height: 60px;
+}
+.plan-contenedor-items .item {
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--purple-50); border-radius: 6px; padding: 4px 8px;
+    margin-bottom: 3px; font-size: .72rem; cursor: grab;
+}
+.plan-contenedor-items .item:hover { background: var(--purple-100); }
+.plan-contenedor-items .item .item-mat { font-weight: 600; }
+.plan-contenedor-items .item .item-qty { color: var(--purple-700); font-weight: 700; }
+.plan-contenedor-items .item .item-remove {
+    cursor: pointer; color: var(--gray-400); font-size: .8rem;
+    background: none; border: none; padding: 0 2px;
+}
+.plan-contenedor-items .item .item-remove:hover { color: #dc3545; }
+.plan-contenedor-empty {
+    color: var(--gray-400); font-size: .7rem; text-align: center;
+    padding: 20px 0; font-style: italic;
+}
+
+/* ─── Modal ─── */
+.plan-modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.4);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000; opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+.plan-modal-overlay.open { opacity: 1; pointer-events: auto; }
+.plan-modal {
+    background: #fff; border-radius: var(--radius-lg); padding: 24px;
+    min-width: 340px; max-width: 420px; box-shadow: 0 8px 30px rgba(0,0,0,.15);
+}
+.plan-modal h4 { margin: 0 0 6px; font-size: 1rem; color: var(--purple-900); }
+.plan-modal p { margin: 0 0 14px; font-size: .82rem; color: var(--gray-600); }
+.plan-modal .modal-info { font-size: .78rem; color: var(--gray-500); margin-bottom: 12px; }
+.plan-modal .modal-input {
+    width: 100%; padding: 10px 12px; border: 2px solid var(--border);
+    border-radius: var(--radius); font-size: 1.1rem; text-align: center;
+    font-weight: 700; outline: none; box-sizing: border-box;
+}
+.plan-modal .modal-input:focus { border-color: var(--purple-500); }
+.plan-modal .modal-actions { display: flex; gap: 8px; margin-top: 14px; justify-content: flex-end; }
+
+/* ─── Toast ─── */
+.plan-toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--purple-900); color: #fff; padding: 10px 20px;
+    border-radius: var(--radius); font-size: .82rem; z-index: 2000;
+    opacity: 0; transition: opacity .3s; pointer-events: none;
+}
+.plan-toast.show { opacity: 1; }
+.plan-toast .toast-actions { margin-left: 12px; display: inline-flex; gap: 6px; }
+.plan-toast .toast-actions button {
+    background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.3);
+    border-radius: 4px; padding: 2px 8px; cursor: pointer; font-size: .75rem;
+}
+.plan-toast .toast-actions button:hover { background: rgba(255,255,255,.25); }
+
+/* ─── Undo Button ─── */
+.plan-undo-btn {
+    position: fixed; bottom: 24px; right: 24px; z-index: 1500;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 50%; width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.1);
+    font-size: 1.1rem; color: var(--purple-700); transition: all .15s;
+}
+.plan-undo-btn:hover { box-shadow: 0 4px 12px rgba(0,0,0,.15); color: var(--purple-900); }
+.plan-undo-btn:disabled { opacity: .3; cursor: default; }
+
+/* ─── Drag Ghost ─── */
+.plan-drag-ghost {
+    position: fixed; pointer-events: none; z-index: 3000;
+    background: var(--purple-700); color: #fff; padding: 6px 14px;
+    border-radius: 8px; font-size: .8rem; font-weight: 700;
+    box-shadow: 0 4px 16px rgba(0,0,0,.2); transform: rotate(2deg);
+    opacity: .9;
+}
+
+/* ─── Print ─── */
+@media print {
+    .no-print { display: none !important; }
+    @page { size: landscape; margin: 12mm; }
+    body { font-size: 9pt; }
+    .plan-board { display: block; }
+    .plan-materiales { display: none; }
+    .plan-contenedores { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .plan-contenedor { border: 1px solid #333; break-inside: avoid; min-height: auto; }
+    .plan-contenedor-header input { border: none; }
+    .plan-contenedor-cap input { border: none; }
+    .plan-stats .num { font-size: 1rem; }
+    .plan-undo-btn { display: none; }
+}

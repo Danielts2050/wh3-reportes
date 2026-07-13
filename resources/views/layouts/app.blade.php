@@ -67,6 +67,12 @@
                 Distribución Lotes
             </a>
 
+            <a href="/planificador"
+               class="nav-item {{ request()->is('planificador*') ? 'active':'' }}">
+                <i class="fa-solid fa-truck-loading"></i>
+                Planificador Carga
+            </a>
+
             <a href="/kpi-cumplimiento-plan"
                class="nav-item {{ request()->is('kpi-cumplimiento-plan*') ? 'active':'' }}">
                 <i class="fa-solid fa-bullseye"></i>

@@ -4,6 +4,7 @@ use App\Http\Controllers\DistribucionLotesController;
 use App\Http\Controllers\HorasExtrasController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\KpiCumplimientoPlanController;
+use App\Http\Controllers\PlanificadorController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\ResumenPaletasController;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,10 @@ Route::post('/distribucion-lotes/exportar', [DistribucionLotesController::class,
 Route::get('/kpi-cumplimiento-plan', [KpiCumplimientoPlanController::class, 'index']);
 Route::post('/kpi-cumplimiento-plan/procesar', [KpiCumplimientoPlanController::class, 'procesar']);
 Route::post('/kpi-cumplimiento-plan/exportar-pdf', [KpiCumplimientoPlanController::class, 'exportarPdf']);
+
+Route::get('/planificador', [PlanificadorController::class, 'index']);
+Route::post('/planificador/procesar', [PlanificadorController::class, 'procesar']);
+Route::post('/planificador/exportar', [PlanificadorController::class, 'exportar']);
 
 Route::get('/test-pdf', function () {
     try {
