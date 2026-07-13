@@ -36,7 +36,7 @@
             position: relative; overflow: hidden; margin-bottom: 10px;
         }
         .bar-fill {
-            height: 100%; background: linear-gradient(90deg, #28a745, #20c997);
+            height: 100%; background: #28a745;
             border-radius: 18px; display: flex; align-items: center; justify-content: center;
         }
         .bar-fill .pct { font-size: 14pt; font-weight: 800; color: #1a3a5c; }
@@ -189,43 +189,36 @@
             <th>Categoría</th>
             <th>Items</th>
             <th>%</th>
-            <th>Afecta</th>
         </tr>
         <tr>
             <td><strong>Completados Exactos</strong></td>
             <td>{{ $total_completados_exactos }}</td>
             <td>{{ $total_items_plan > 0 ? number_format(($total_completados_exactos / $total_items_plan) * 100, 2) : 0 }}%</td>
-            <td>Sí</td>
         </tr>
         <tr>
             <td>Incompletos Operativos</td>
             <td>{{ $total_incompletos_operativos }}</td>
             <td>{{ $total_items_plan > 0 ? number_format(($total_incompletos_operativos / $total_items_plan) * 100, 2) : 0 }}%</td>
-            <td>Sí</td>
         </tr>
         <tr style="color:#777;font-size:6.5pt;">
             <td>Enviados de más <span style="font-style:italic;">(excedente)</span></td>
             <td>{{ $total_enviados_de_mas }}</td>
             <td>{{ $total_items_plan > 0 ? number_format(($total_enviados_de_mas / $total_items_plan) * 100, 2) : 0 }}%</td>
-            <td>No</td>
         </tr>
         <tr>
             <td style="color:#dc3545;">Fuera del Plan</td>
             <td>{{ $total_fuera_inventario }}</td>
             <td>{{ $total_items_plan > 0 ? number_format(($total_fuera_inventario / $total_items_plan) * 100, 2) : 0 }}%</td>
-            <td>No</td>
         </tr>
         <tr>
             <td style="color:#fd7e14;">Agotado</td>
             <td>{{ $total_agotados }}</td>
             <td>{{ $total_items_plan > 0 ? number_format(($total_agotados / $total_items_plan) * 100, 2) : 0 }}%</td>
-            <td>No</td>
         </tr>
         <tr style="font-weight:bold;background:#f0ecfd;">
             <td>TOTAL</td>
             <td>{{ $total_items_plan }}</td>
             <td>100%</td>
-            <td></td>
         </tr>
     </table>
 
@@ -285,7 +278,7 @@
     @endphp
     @if(count($itemsSinStock) > 0)
     <div class="section-title" style="margin-top:18px;border:none;font-size:8pt;padding:4px 8px;background:#fff3e0;color:#92400e;border-radius:4px;">
-        <i class="fa-solid fa-triangle-exclamation"></i>
+        ⚠
         Nota importante: En la siguiente tabla se detallan los materiales que no pudieron ser despachados debido a la falta de inventario.
     </div>
     <table class="detalle" style="margin-top:8px;">
