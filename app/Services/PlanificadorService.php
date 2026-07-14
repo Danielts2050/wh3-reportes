@@ -91,10 +91,10 @@ class PlanificadorService
             $totalQty = $stock ? $stock['total_qty'] : 0;
             $blocked = $stock ? $stock['blocked'] : 0;
 
-            $paletsRequeridos = $qtyPerPallet > 0 ? $reqQty / $qtyPerPallet : 0;
+            $paletsRequeridos = $qtyPerPallet > 0 ? ceil($reqQty / $qtyPerPallet) : 0;
             $paletsTotales = $qtyPerPallet > 0 ? $totalQty / $qtyPerPallet : 0;
-            $paletsBloqueados = $qtyPerPallet > 0 ? $blocked / $qtyPerPallet : 0;
-            $paletsDisponibles = $paletsTotales - $paletsBloqueados;
+            $paletsBloqueados = $qtyPerPallet > 0 ? ceil($blocked / $qtyPerPallet) : 0;
+            $paletsDisponibles = $qtyPerPallet > 0 ? floor(($totalQty - $blocked) / $qtyPerPallet) : 0;
 
             $cantidadDisponible = $totalQty - $blocked;
 
