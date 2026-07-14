@@ -57,7 +57,7 @@
         for (let i = 0; i < NUM_CONTENEDORES; i++) {
             contenedores.push({
                 nombre: 'Contenedor ' + (i + 1),
-                capacidad: 24,
+                capacidad: 34,
                 items: [],
             });
         }

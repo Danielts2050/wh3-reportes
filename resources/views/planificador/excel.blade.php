@@ -4,14 +4,20 @@
     <meta charset="UTF-8">
     <title>Plan de Carga</title>
     <style>
-        body { font-family: Arial, sans-serif; font-size: 10pt; }
-        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
-        th { background: #31245e; color: #fff; padding: 6px 8px; text-align: center; font-size: 9pt; }
-        td { border: 1px solid #ccc; padding: 4px 6px; text-align: center; font-size: 9pt; }
-        tr:nth-child(even) { background: #f8f6ff; }
-        h2 { color: #31245e; font-size: 13pt; margin: 20px 0 8px; }
-        .subtle { color: #888; font-size: 8pt; }
-        .bg-yellow { background: #fff3cd; }
+        body { font-family: Arial, sans-serif; font-size: 11pt; }
+        table { border-collapse: collapse; margin-bottom: 20px; }
+        caption { font-weight: bold; text-align: left; padding: 6px 0; font-size: 12pt; }
+        th {
+            border: 1px solid #000; background-color: #FFF200;
+            font-weight: bold; text-align: center; vertical-align: middle;
+            padding: 5px 8px;
+        }
+        td {
+            border: 1px solid #000; text-align: center; vertical-align: middle;
+            padding: 4px 8px;
+        }
+        h2 { font-size: 14pt; margin: 24px 0 10px; }
+        .resaltar { background-color: #FFF200; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -20,29 +26,33 @@
     @foreach($contenedores as $idx => $cont)
     @php
         $nombre = $cont['nombre'] ?? ('Contenedor ' . ($idx + 1));
-        $capacidad = $cont['capacidad'] ?? 24;
+        $capacidad = $cont['capacidad'] ?? 34;
         $totalAsig = array_sum(array_column($cont['items'] ?? [], 'palets'));
         $pct = $capacidad > 0 ? round(($totalAsig / $capacidad) * 100, 1) : 0;
     @endphp
-    <table>
-        <caption style="font-weight:bold;text-align:left;padding:6px 0;">
-            {{ $nombre }} — {{ number_format($totalAsig, 2) }}/{{ $capacidad }} ({{ $pct }}%)
-        </caption>
+    <table cellspacing="0" cellpadding="4" style="width:auto;">
+        <caption>{{ $nombre }} — {{ (int)$totalAsig }}/{{ $capacidad }} ({{ $pct }}%)</caption>
         <thead>
             <tr>
-                <th>Material</th>
-                <th>Palets Asignados</th>
+                <th style="width:160px;">Material</th>
+                <th style="width:100px;">Palets</th>
             </tr>
         </thead>
         <tbody>
             @forelse($cont['items'] ?? [] as $item)
             <tr>
                 <td>{{ $item['material'] }}</td>
-                <td>{{ number_format($item['palets'], 3) }}</td>
+                <td>{{ (int)$item['palets'] }}</td>
             </tr>
             @empty
-            <tr><td colspan="2" class="subtle">Sin asignaciones</td></tr>
+            <tr>
+                <td colspan="2" style="color:#666; font-style:italic;">Sin asignaciones</td>
+            </tr>
             @endforelse
+            <tr class="resaltar">
+                <td>TOTAL</td>
+                <td>{{ (int)$totalAsig }}</td>
+            </tr>
         </tbody>
     </table>
     @endforeach
@@ -51,7 +61,7 @@
     @php $noAsignados = array_filter($materiales, fn($m) => ($m['palets_disponibles'] - $m['palets_asignados']) > 0); @endphp
     @if(count($noAsignados) > 0)
     <h2>Materiales No Asignados</h2>
-    <table>
+    <table cellspacing="0" cellpadding="4" style="width:100%;">
         <thead>
             <tr>
                 <th>Material</th>
@@ -66,10 +76,10 @@
             @foreach($noAsignados as $m)
             <tr>
                 <td>{{ $m['material'] }}</td>
-                <td>{{ number_format($m['palets_requeridos'], 3) }}</td>
-                <td>{{ number_format($m['palets_disponibles'], 3) }}</td>
-                <td>{{ number_format($m['palets_asignados'], 3) }}</td>
-                <td>{{ number_format($m['palets_disponibles'] - $m['palets_asignados'], 3) }}</td>
+                <td>{{ (int)$m['palets_requeridos'] }}</td>
+                <td>{{ (int)$m['palets_disponibles'] }}</td>
+                <td>{{ (int)$m['palets_asignados'] }}</td>
+                <td>{{ (int)($m['palets_disponibles'] - $m['palets_asignados']) }}</td>
                 <td>{{ $m['estado'] }}</td>
             </tr>
             @endforeach
@@ -78,17 +88,15 @@
     @endif
 
     <h2>Datos Originales</h2>
-    <table>
+    <table cellspacing="0" cellpadding="4" style="width:100%;">
         <thead>
             <tr>
                 <th>Material</th>
                 <th>Cant. Requerida</th>
                 <th>Qty/Pallet</th>
                 <th>Cant. Disponible</th>
-                <th>Palets Requeridos</th>
-                <th>Palets Totales</th>
-                <th>Palets Bloqueados</th>
-                <th>Palets Disponibles</th>
+                <th>Palets Req.</th>
+                <th>Palets Disp.</th>
                 <th>Estado</th>
             </tr>
         </thead>
@@ -99,10 +107,8 @@
                 <td>{{ number_format($m['cantidad_requerida'], 2) }}</td>
                 <td>{{ number_format($m['qty_per_pallet'], 4) }}</td>
                 <td>{{ number_format($m['cantidad_disponible'], 2) }}</td>
-                <td>{{ number_format($m['palets_requeridos'], 3) }}</td>
-                <td>{{ number_format($m['palets_totales'], 3) }}</td>
-                <td>{{ number_format($m['palets_bloqueados'], 3) }}</td>
-                <td>{{ number_format($m['palets_disponibles'], 3) }}</td>
+                <td>{{ (int)$m['palets_requeridos'] }}</td>
+                <td>{{ (int)$m['palets_disponibles'] }}</td>
                 <td>{{ $m['estado'] }}</td>
             </tr>
             @endforeach
