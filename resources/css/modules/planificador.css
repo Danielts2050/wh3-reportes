@@ -32,6 +32,8 @@
 }
 .plan-toolbar-title { font-size: 20px; font-weight: 800; color: var(--gray-900); }
 .plan-toolbar-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.plan-toolbar-actions .btn { position: relative; overflow: hidden; }
+.plan-toolbar-actions .btn:active { transform: scale(0.97); }
 
 /* ─── Stats Bar ─── */
 .plan-stats {
@@ -42,6 +44,17 @@
     border-radius: var(--radius-lg); padding: 10px 16px;
     text-align: center; flex: 1; min-width: 120px;
 }
+.plan-stat { position: relative; padding-left: 52px; text-align: left; }
+.plan-stat .stat-icon {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    width: 30px; height: 30px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+}
+.plan-stat:nth-child(1) .stat-icon { background: var(--blue-100); color: var(--blue-500); }
+.plan-stat:nth-child(2) .stat-icon { background: var(--purple-100); color: var(--purple-500); }
+.plan-stat:nth-child(3) .stat-icon { background: var(--green-100); color: var(--green-500); }
+.plan-stat:nth-child(4) .stat-icon { background: var(--orange-100); color: var(--orange-500); }
 .plan-stat .num { font-size: 1.3rem; font-weight: 800; color: var(--purple-800); display: block; }
 .plan-stat .lbl { font-size: .7rem; color: var(--gray-500); text-transform: uppercase; }
 
@@ -83,7 +96,10 @@
     margin-bottom: 8px; cursor: grab; transition: all .15s;
     user-select: none; font-size: .78rem;
 }
-.plan-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.plan-card:hover {
+    box-shadow: var(--shadow-md); transform: translateY(-2px) scale(1.02);
+    border-color: var(--purple-200);
+}
 .plan-card:active { cursor: grabbing; }
 .plan-card.dragging { opacity: .4; }
 .plan-card .mat-codigo { font-weight: 700; color: var(--purple-800); font-size: .85rem; }
@@ -105,44 +121,54 @@
     background: var(--surface); border: var(--plan-container-border);
     border-radius: var(--radius-lg); padding: 14px; min-height: 260px;
     transition: all .2s; display: flex; flex-direction: column;
+    overflow: hidden;
 }
 .plan-contenedor:hover { box-shadow: var(--shadow-sm); }
 .plan-contenedor.drag-over {
     border-color: var(--purple-500); background: var(--purple-50);
-    box-shadow: 0 0 0 3px var(--purple-100);
+    animation: plan-pulse-glow 1s ease-in-out infinite;
 }
+@keyframes plan-pulse-glow {
+    0%, 100% { box-shadow: 0 0 0 3px var(--purple-100); }
+    50% { box-shadow: 0 0 0 6px var(--purple-200), 0 0 20px rgba(111,92,194,.2); }
+}
+
+/* ─── Container Header Gradient ─── */
 .plan-contenedor-header {
     display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 6px; gap: 4px;
+    margin: -14px -14px 8px -14px; padding: 10px 14px;
+    background: linear-gradient(135deg, var(--purple-700), var(--purple-500));
+    color: #fff;
 }
 .plan-contenedor-nombre {
-    font-size: .8rem; font-weight: 700; color: var(--purple-800);
-    background: none; border: none; outline: none; width: 100px;
+    font-size: .8rem; font-weight: 700; color: #fff;
+    background: none; border: none; outline: none; width: auto; flex: 1;
     padding: 2px 4px; border-radius: 4px;
 }
-.plan-contenedor-nombre:focus { background: var(--purple-50); outline: none; }
-.plan-contenedor-nombre:focus-visible { outline: 2px solid var(--purple-500); outline-offset: 1px; }
+.plan-contenedor-nombre:focus { background: rgba(255,255,255,.15); outline: none; }
+.plan-contenedor-nombre:focus-visible { outline: 2px solid rgba(255,255,255,.6); outline-offset: 1px; }
 .plan-contenedor-cap {
-    font-size: .7rem; color: var(--gray-500);
+    font-size: .7rem; color: rgba(255,255,255,.8);
     display: flex; align-items: center; gap: 4px;
 }
 .plan-contenedor-cap input {
-    width: 42px; padding: 2px 4px; border: 1px solid var(--border);
+    width: 42px; padding: 2px 4px; border: 1px solid rgba(255,255,255,.3);
     border-radius: 4px; font-size: .7rem; text-align: center;
+    background: rgba(255,255,255,.15); color: #fff;
 }
-.plan-contenedor-cap input:focus-visible { outline: 2px solid var(--purple-500); outline-offset: 1px; }
+.plan-contenedor-cap input:focus-visible { outline: 2px solid rgba(255,255,255,.6); outline-offset: 1px; }
 
 /* ─── Barra de Progreso ─── */
 .plan-progress {
-    height: 14px; background: var(--gray-100); border-radius: 7px;
+    height: 16px; background: var(--gray-100); border-radius: 8px;
     overflow: hidden; margin-bottom: 8px; position: relative;
 }
 .plan-progress-fill {
-    height: 100%; border-radius: 5px; transition: width .3s ease;
-    background: var(--purple-500);
+    height: 100%; border-radius: 8px; transition: width .4s ease;
+    background: linear-gradient(90deg, var(--purple-500), var(--purple-400));
 }
-.plan-progress-fill.warning { background: #ffc107; }
-.plan-progress-fill.danger { background: #dc3545; }
+.plan-progress-fill.warning { background: linear-gradient(90deg, #ffc107, #ff9800); }
+.plan-progress-fill.danger { background: linear-gradient(90deg, #ff9800, #dc3545); }
 .plan-progress-text {
     font-size: .65rem; color: var(--gray-500); text-align: right;
 }
@@ -150,6 +176,25 @@
 /* ─── Items dentro del contenedor ─── */
 .plan-contenedor-items {
     flex: 1; overflow-y: auto; min-height: 60px;
+    scrollbar-width: thin; scrollbar-color: var(--purple-200) transparent;
+}
+
+/* ─── Custom Scrollbar ─── */
+.plan-materiales::-webkit-scrollbar,
+.plan-contenedor-items::-webkit-scrollbar {
+    width: 5px;
+}
+.plan-materiales::-webkit-scrollbar-track,
+.plan-contenedor-items::-webkit-scrollbar-track {
+    background: transparent;
+}
+.plan-materiales::-webkit-scrollbar-thumb,
+.plan-contenedor-items::-webkit-scrollbar-thumb {
+    background: var(--purple-200); border-radius: 10px;
+}
+.plan-materiales::-webkit-scrollbar-thumb:hover,
+.plan-contenedor-items::-webkit-scrollbar-thumb:hover {
+    background: var(--purple-300);
 }
 .plan-contenedor-items .item {
     display: flex; justify-content: space-between; align-items: center;
@@ -159,7 +204,11 @@
 .plan-contenedor-items .item:hover { background: var(--purple-100); }
 .plan-contenedor-items .item:focus-visible { outline: 2px solid var(--purple-500); outline-offset: 1px; }
 .plan-contenedor-items .item .item-mat { font-weight: 600; }
-.plan-contenedor-items .item .item-qty { color: var(--purple-700); font-weight: 700; }
+.plan-contenedor-items .item .item-qty {
+    background: var(--purple-600); color: #fff; font-weight: 700;
+    border-radius: 10px; padding: 1px 8px; min-width: 24px;
+    text-align: center; font-size: .7rem;
+}
 .plan-contenedor-items .item .item-remove {
     cursor: pointer; color: var(--gray-400); font-size: .8rem;
     background: none; border: none; padding: 0 2px;
@@ -168,19 +217,32 @@
 .plan-contenedor-items .item .item-remove:focus-visible { outline: 2px solid var(--purple-500); outline-offset: 1px; }
 .plan-contenedor-empty {
     color: var(--gray-400); font-size: .7rem; text-align: center;
-    padding: 20px 0; font-style: italic;
+    padding: 24px 0; font-style: italic;
+}
+.plan-contenedor-empty i {
+    display: block; font-size: 2rem; margin-bottom: 8px; color: var(--purple-300);
+    animation: plan-bounce 2s ease-in-out infinite;
+}
+@keyframes plan-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
 }
 
 /* ─── Modal ─── */
 .plan-modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,.4);
+    position: fixed; inset: 0; background: rgba(0,0,0,.3);
     display: flex; align-items: center; justify-content: center;
     z-index: 1000; opacity: 0; pointer-events: none; transition: opacity .2s;
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
 }
 .plan-modal-overlay.open { opacity: 1; pointer-events: auto; }
 .plan-modal {
-    background: #fff; border-radius: var(--radius-lg); padding: 24px;
-    min-width: 340px; max-width: 420px; box-shadow: 0 8px 30px rgba(0,0,0,.15);
+    background: rgba(255,255,255,.96);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-radius: var(--radius-lg); padding: 24px;
+    min-width: 340px; max-width: 420px;
+    box-shadow: 0 16px 48px rgba(0,0,0,.18);
+    border: 1px solid rgba(255,255,255,.6);
 }
 .plan-modal h4 { margin: 0 0 6px; font-size: 1rem; color: var(--purple-900); }
 .plan-modal p { margin: 0 0 14px; font-size: .82rem; color: var(--gray-600); }

@@ -224,7 +224,7 @@
                 <div class="plan-progress-text no-print">${totalAsignado.toFixed(1)} / ${c.capacidad} (${pct.toFixed(1)}%)</div>
                 <div class="plan-contenedor-items" data-container="${i}">
                     ${c.items.length === 0
-                        ? '<div class="plan-contenedor-empty">Arrastra materiales aquí</div>'
+                        ? '<div class="plan-contenedor-empty"><i class="fa-solid fa-arrow-down"></i> Arrastra materiales aquí</div>'
                         : c.items.map((it, j) => `
                             <div class="item" draggable="true"
                                 data-material="${escHtml(it.material)}"

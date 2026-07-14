@@ -27,18 +27,22 @@
 {{-- Stats --}}
 <div class="plan-stats">
     <div class="plan-stat">
+        <i class="fa-solid fa-cubes stat-icon"></i>
         <span class="num" id="stat-materiales">{{ $total_materiales }}</span>
         <span class="lbl">Materiales</span>
     </div>
     <div class="plan-stat">
+        <i class="fa-solid fa-calculator stat-icon"></i>
         <span class="num" id="stat-palets-req">{{ number_format($total_palets_requeridos, 2) }}</span>
         <span class="lbl">Palets Requeridos</span>
     </div>
     <div class="plan-stat">
+        <i class="fa-solid fa-check-circle stat-icon"></i>
         <span class="num" id="stat-palets-disp">{{ number_format($total_palets_disponibles, 2) }}</span>
         <span class="lbl">Palets Disponibles</span>
     </div>
     <div class="plan-stat">
+        <i class="fa-solid fa-boxes-stacked stat-icon"></i>
         <span class="num" id="stat-contenedores-uso">0/8</span>
         <span class="lbl">Contenedores en uso</span>
     </div>
