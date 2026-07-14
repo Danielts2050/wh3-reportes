@@ -137,20 +137,21 @@
         let html = '';
         for (const m of materiales) {
             const disp = m.palets_disponibles - m.palets_asignados;
-            const isComplete = disp <= 0;
+            const cumplido = m.palets_asignados >= m.palets_requeridos;
             const isAgotado = m.estado === 'agotado' || m.palets_disponibles <= 0;
 
-            if (isComplete && !showAgot) continue;
+            if (cumplido && !showAgot) continue;
             if (isAgotado && !showAgot) continue;
             if (term && !m.material.toLowerCase().includes(term)) continue;
 
             let cls = 'plan-card';
-            if (isComplete) cls += ' est-completo';
+            if (cumplido) cls += ' est-completo';
             else if (isAgotado) cls += ' est-agotado';
-            else if (disp < m.palets_requeridos) cls += ' est-parcial';
-            else cls += ' est-disponible';
+            else if (disp > 0 && disp < m.palets_requeridos) cls += ' est-parcial';
+            else if (disp > 0) cls += ' est-disponible';
+            else cls += ' est-agotado';
 
-            const draggable = !isComplete && !isAgotado;
+            const draggable = disp > 0;
 
             html += `<div class="${cls}" draggable="${draggable}"
                 data-material="${m.material}">

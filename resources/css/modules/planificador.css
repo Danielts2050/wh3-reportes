@@ -29,7 +29,7 @@
 
 /* ─── Board Layout ─── */
 .plan-board {
-    display: grid; grid-template-columns: 320px 1fr; gap: 16px;
+    display: grid; grid-template-columns: 360px 1fr; gap: 20px;
     min-height: 600px;
 }
 
@@ -37,7 +37,7 @@
 .plan-materiales {
     background: var(--surface); border: 1px solid var(--border);
     border-radius: var(--radius-lg); padding: 12px; overflow-y: auto;
-    max-height: 800px;
+    max-height: none; height: fit-content;
 }
 .plan-materiales-header {
     display: flex; justify-content: space-between; align-items: center;
@@ -59,8 +59,8 @@
 .plan-card {
     background: var(--surface); border: 1px solid var(--border);
     border-left: var(--plan-card-border) solid var(--gray-300);
-    border-radius: var(--plan-card-radius); padding: 8px 10px;
-    margin-bottom: 6px; cursor: grab; transition: all .15s;
+    border-radius: var(--plan-card-radius); padding: 10px 12px;
+    margin-bottom: 8px; cursor: grab; transition: all .15s;
     user-select: none; font-size: .78rem;
 }
 .plan-card:hover { box-shadow: 0 2px 6px rgba(0,0,0,.08); transform: translateY(-1px); }
@@ -79,11 +79,11 @@
 
 /* ─── Contenedores Grid ─── */
 .plan-contenedores {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
 }
 .plan-contenedor {
     background: var(--surface); border: 2px dashed var(--border);
-    border-radius: var(--radius-lg); padding: 10px; min-height: 200px;
+    border-radius: var(--radius-lg); padding: 14px; min-height: 260px;
     transition: all .15s; display: flex; flex-direction: column;
 }
 .plan-contenedor.drag-over {
@@ -111,8 +111,8 @@
 
 /* ─── Barra de Progreso ─── */
 .plan-progress {
-    height: 10px; background: var(--gray-100); border-radius: 5px;
-    overflow: hidden; margin-bottom: 6px; position: relative;
+    height: 14px; background: var(--gray-100); border-radius: 7px;
+    overflow: hidden; margin-bottom: 8px; position: relative;
 }
 .plan-progress-fill {
     height: 100%; border-radius: 5px; transition: width .3s ease;
@@ -207,14 +207,15 @@
 /* ─── Print ─── */
 @media print {
     .no-print { display: none !important; }
-    @page { size: landscape; margin: 12mm; }
+    @page { size: landscape; margin: 10mm; }
     body { font-size: 9pt; }
     .plan-board { display: block; }
     .plan-materiales { display: none; }
-    .plan-contenedores { grid-template-columns: repeat(4, 1fr); gap: 8px; }
-    .plan-contenedor { border: 1px solid #333; break-inside: avoid; min-height: auto; }
-    .plan-contenedor-header input { border: none; }
-    .plan-contenedor-cap input { border: none; }
+    .plan-contenedores { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .plan-contenedor { border: 1px solid #333; break-inside: avoid; min-height: auto; padding: 10px; }
+    .plan-contenedor-header input { border: none; background: none; }
+    .plan-contenedor-cap input { border: none; background: none; }
+    .plan-progress { height: 10px; }
     .plan-stats .num { font-size: 1rem; }
     .plan-undo-btn { display: none; }
 }

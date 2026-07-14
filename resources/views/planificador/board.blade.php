@@ -66,7 +66,7 @@
         <h4 id="modal-title">Asignar material</h4>
         <p>¿Cuántas paletas deseas agregar a este contenedor?</p>
         <div class="modal-info" id="modal-info"></div>
-        <input class="modal-input" id="modal-input" type="number" min="0.001" step="0.001" autofocus />
+        <input class="modal-input" id="modal-input" type="number" min="1" step="1" autofocus />
         <div class="modal-actions">
             <button class="btn btn-outline-secondary" id="modal-cancel">Cancelar</button>
             <button class="btn btn-primary" id="modal-confirm">Asignar</button>
