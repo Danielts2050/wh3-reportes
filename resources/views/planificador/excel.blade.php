@@ -57,7 +57,7 @@
         @endphp
         <tr>
             <td>{{ $item['material'] }}</td>
-            <td>{{ number_format($cantidad, 2, ',', '.') }}</td>
+            <td>{{ (int)$cantidad }}</td>
             <td>{{ (int)$item['palets'] }}</td>
             <td></td>
         </tr>
@@ -71,49 +71,6 @@
     </table>
     @endforeach
 
-    @php
-        $todosItems = [];
-        $totalGlobal = 0;
-        foreach ($contenedores as $cont) {
-            foreach ($cont['items'] ?? [] as $item) {
-                $mat = $item['material'];
-                if (!isset($todosItems[$mat])) $todosItems[$mat] = 0;
-                $todosItems[$mat] += $item['palets'];
-            }
-        }
-    @endphp
 
-    @if(count($todosItems) > 0)
-    <h2>Resumen General</h2>
-    <table cellspacing="0" cellpadding="4" style="width:auto;">
-        <tr>
-            <th style="width:160px;">Material</th>
-            <th style="width:110px;">Cantidad</th>
-            <th style="width:80px;">Palets</th>
-            <th style="width:140px;">Referencia</th>
-        </tr>
-        @php $totalCant = 0; $totalPal = 0; @endphp
-        @foreach($todosItems as $material => $palets)
-        @php
-            $matData = collect($materiales)->firstWhere('material', $material);
-            $cantidad = $matData['cantidad_requerida'] ?? 0;
-            $totalCant += $cantidad;
-            $totalPal += $palets;
-        @endphp
-        <tr>
-            <td>{{ $material }}</td>
-            <td>{{ number_format($cantidad, 2, ',', '.') }}</td>
-            <td>{{ (int)$palets }}</td>
-            <td></td>
-        </tr>
-        @endforeach
-        <tr class="resaltar">
-            <td>TOTAL</td>
-            <td>{{ number_format($totalCant, 2, ',', '.') }}</td>
-            <td>{{ (int)$totalPal }}</td>
-            <td></td>
-        </tr>
-    </table>
-    @endif
 </body>
 </html>
