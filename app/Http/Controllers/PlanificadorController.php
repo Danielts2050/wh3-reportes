@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\PlanificadorService;
 use Illuminate\Http\Request;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class PlanificadorController extends Controller
 {
@@ -23,12 +24,21 @@ class PlanificadorController extends Controller
     {
         $request->validate([
             'plan_cliente' => 'required|string',
-            'stock' => 'required|string',
+            'stock' => 'required',
         ]);
+
+        if ($request->hasFile('stock')) {
+            $file = $request->file('stock');
+            $spreadsheet = IOFactory::load($file->getPathname());
+            $rows = $spreadsheet->getActiveSheet()->toArray();
+            $stockData = $rows ?: [];
+        } else {
+            $stockData = $request->input('stock');
+        }
 
         $resultado = $this->planificadorService->procesar(
             $request->input('plan_cliente'),
-            $request->input('stock')
+            $stockData
         );
 
         return view('planificador.board', [

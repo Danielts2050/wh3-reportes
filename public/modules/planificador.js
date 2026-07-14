@@ -20,6 +20,7 @@
     const searchInput = $('#busqueda');
     const toggleAgotados = $('#toggle-agotados');
     const undoBtn = $('#undo-btn');
+    const redoBtn = $('#redo-btn');
     const toast = $('#toast');
     const toastMsg = $('#toast-msg');
     const modalOverlay = $('#modal-overlay');
@@ -65,7 +66,7 @@
 
     /* ─── Save / Load / Clear ─── */
     function saveState() {
-        const data = { materiales, contenedores };
+        const data = { materiales, contenedores, historial, currentHistoryIdx };
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {}
     }
 
@@ -78,13 +79,21 @@
 
     function clearState() {
         try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+        historial = [];
+        currentHistoryIdx = -1;
+        updateUndoBtn();
     }
 
     function restoreState(saved) {
         materiales = saved.materiales || [];
         contenedores = saved.contenedores || [];
+        if (saved.historial) {
+            historial = saved.historial;
+            currentHistoryIdx = saved.currentHistoryIdx ?? (historial.length - 1);
+        }
         render();
         updateStats();
+        updateUndoBtn();
         saveState();
     }
 
@@ -112,6 +121,19 @@
 
     function updateUndoBtn() {
         if (undoBtn) undoBtn.disabled = currentHistoryIdx <= 0;
+        if (redoBtn) redoBtn.disabled = currentHistoryIdx >= historial.length - 1;
+    }
+
+    function redo() {
+        if (currentHistoryIdx >= historial.length - 1) return;
+        currentHistoryIdx++;
+        const snap = JSON.parse(historial[currentHistoryIdx]);
+        materiales = snap.materiales;
+        contenedores = snap.contenedores;
+        render();
+        updateStats();
+        saveState();
+        updateUndoBtn();
     }
 
     /* ─── Búsqueda ─── */
@@ -136,7 +158,7 @@
 
         let html = '';
         for (const m of materiales) {
-            const disp = m.palets_disponibles - m.palets_asignados;
+            const disp = Math.max(0, m.palets_disponibles - m.palets_asignados);
             const cumplido = m.palets_asignados >= m.palets_requeridos;
             const isAgotado = m.estado === 'agotado' || m.palets_disponibles <= 0;
 
@@ -394,7 +416,7 @@
     function confirmModal() {
         if (!modalCallback) return;
         const { material, maxQty, containerIdx } = modalCallback;
-        const qty = parseFloat(modalInput.value);
+        const qty = parseInt(modalInput.value, 10);
         if (isNaN(qty) || qty <= 0 || qty > maxQty) {
             modalInput.style.borderColor = '#dc3545';
             return;
@@ -492,12 +514,31 @@
             undoBtn.addEventListener('click', undo);
         }
 
-        // Keyboard shortcut Ctrl+Z for undo
+        if (redoBtn) {
+            redoBtn.addEventListener('click', redo);
+        }
+
+        // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+            const tag = e.target.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
                 e.preventDefault();
                 undo();
             }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z' && e.shiftKey) {
+                e.preventDefault();
+                redo();
+            }
+        });
+
+        // Global dragend to clear stale state
+        document.addEventListener('dragend', function() {
+            draggedMaterial = null;
+            dragData = null;
+            if (ghostEl) { ghostEl.remove(); ghostEl = null; }
+            $$('.plan-card.dragging').forEach(el => el.classList.remove('dragging'));
+            $$('.plan-contenedor.drag-over').forEach(el => el.classList.remove('drag-over'));
         });
 
         // Export Excel
@@ -515,6 +556,10 @@
 
     /* ─── Export Excel ─── */
     function exportExcel() {
+        const btn = document.getElementById('export-excel');
+        if (!btn || btn.disabled) return;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Exportando...';
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = '/planificador/exportar';
@@ -533,7 +578,11 @@
         form.appendChild(inp);
         document.body.appendChild(form);
         form.submit();
-        setTimeout(() => form.remove(), 3000);
+        setTimeout(() => {
+            form.remove();
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-file-excel"></i> Exportar Excel';
+        }, 5000);
     }
 
     /* ─── Helpers ─── */

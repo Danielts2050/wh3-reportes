@@ -4,10 +4,15 @@ namespace App\Services;
 
 class PlanificadorService
 {
-    public function procesar(string $planCliente, string $stock): array
+    public function procesar(string $planCliente, string|array $stock): array
     {
         $plan = $this->parsearPlan($planCliente);
-        $inventario = $this->parsearStock($stock);
+
+        if (is_array($stock)) {
+            $inventario = $this->parsearStockDesdeExcel($stock);
+        } else {
+            $inventario = $this->parsearStock($stock);
+        }
 
         $materiales = $this->cruzarDatos($plan, $inventario);
 
@@ -76,6 +81,73 @@ class PlanificadorService
         }
 
         return $items;
+    }
+
+    public function parsearStockDesdeExcel(array $rows): array
+    {
+        if (empty($rows)) return [];
+
+        $headers = array_map('trim', $rows[0]);
+        $colMap = $this->detectarColumnas($headers);
+
+        if (!isset($colMap['material']) || !isset($colMap['total_qty'])) {
+            throw new \InvalidArgumentException(
+                'No se pudieron detectar las columnas necesarias en el Excel. ' .
+                'Asegúrate de que la primera fila contenga encabezados como: Material, Total Qty, Qty/Pallet, Total Pallets, Blocked.'
+            );
+        }
+
+        $items = [];
+        for ($i = 1; $i < count($rows); $i++) {
+            $row = $rows[$i];
+            if (empty($row)) continue;
+
+            $material = trim((string)($row[$colMap['material']] ?? ''));
+            if ($material === '') continue;
+
+            $totalQty = $this->normalizarNumero((string)($row[$colMap['total_qty']] ?? '0'));
+            $qtyPerPallet = $this->normalizarNumero((string)($row[$colMap['qty_per_pallet']] ?? '0'));
+            $totalPallets = $this->normalizarNumero((string)($row[$colMap['total_pallets']] ?? '0'));
+            $blocked = $this->normalizarNumero((string)($row[$colMap['blocked']] ?? '0'));
+
+            $items[$material] = [
+                'material' => $material,
+                'total_qty' => $totalQty,
+                'qty_per_pallet' => $qtyPerPallet,
+                'total_pallets' => $totalPallets,
+                'blocked' => $blocked,
+            ];
+        }
+
+        return $items;
+    }
+
+    private function detectarColumnas(array $headers): array
+    {
+        $map = [
+            'material' => ['material', 'codigo', 'código', 'item', 'article', 'producto', 'parte', 'part number', 'sku'],
+            'total_qty' => ['total qty', 'total quantity', 'cantidad total', 'cantidad', 'qty', 'quantity', 'total'],
+            'qty_per_pallet' => ['qty/pallet', 'qty per pallet', 'pallet qty', 'cantidad por palet', 'qty x palet', 'qtyxpalet', 'und/palet'],
+            'total_pallets' => ['total pallets', 'pallets', 'palets', 'total palets', 'num palets', 'no. palets', 'pallet count'],
+            'blocked' => ['blocked', 'bloqueado', 'block', 'inventario bloqueado', 'stock bloqueado', 'reservado'],
+        ];
+
+        $result = [];
+        foreach ($headers as $i => $header) {
+            $headerLower = strtolower(trim($header));
+            foreach ($map as $key => $keywords) {
+                if (!isset($result[$key])) {
+                    foreach ($keywords as $kw) {
+                        if (str_contains($headerLower, $kw)) {
+                            $result[$key] = $i;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $result;
     }
 
     private function cruzarDatos(array $plan, array $inventario): array

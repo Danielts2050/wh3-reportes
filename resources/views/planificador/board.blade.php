@@ -84,6 +84,9 @@
 <button class="plan-undo-btn no-print" id="undo-btn" disabled title="Deshacer (Ctrl+Z)">
     <i class="fa-solid fa-rotate-left"></i>
 </button>
+<button class="plan-undo-btn no-print" id="redo-btn" disabled title="Rehacer (Ctrl+Shift+Z)">
+    <i class="fa-solid fa-rotate-right"></i>
+</button>
 
 @endsection
 
