@@ -58,6 +58,10 @@
             background: #31245e; color: #fff; padding: 5px 10px; font-size: 8.5pt;
             font-weight: bold; border-radius: 4px; margin: 14px 0 6px;
         }
+        .week-title {
+            background: #6f5cc2; color: #fff; padding: 4px 10px; font-size: 8pt;
+            font-weight: bold; border-radius: 4px; margin: 12px 0 6px;
+        }
 
         table.info { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
         table.info td { padding: 5px 8px; border: 1px solid #ddd; text-align: center; font-size: 8pt; width: 25%; }
@@ -67,8 +71,7 @@
         table.info td.subtle { color: #777; }
         table.info td.subtle .num { color: #777; font-weight: 400; font-size: 9pt; }
 
-        .comentario { background: #fff3e0; border: 1px solid #ffcc80; padding: 7px 10px; border-radius: 5px; margin: 10px 0; font-size: 7.5pt; }
-        .comentario.success { background: #e8f5e9; border-color: #81c784; }
+        .comentario { background: #f5f6ff; border: 1px solid #c5c9e8; padding: 7px 10px; border-radius: 5px; margin: 10px 0; font-size: 7.5pt; }
 
         table.detalle { width: 100%; border-collapse: collapse; font-size: 6.5pt; margin: 6px 0; }
         table.detalle th { background: #31245e; color: #fff; padding: 4px 3px; text-align: center; font-weight: bold; font-size: 6.5pt; }
@@ -86,6 +89,10 @@
         .badges-row { margin: 5px 0 6px; }
         .badges-row .badge { margin-right: 2px; }
 
+        .day-row { border: 1px solid #ddd; border-radius: 6px; padding: 6px 8px; margin: 8px 0; background: #faf9ff; }
+        .day-row .day-head { font-weight: bold; color: #31245e; font-size: 8pt; margin-bottom: 4px; }
+        .day-row table.detalle { margin: 4px 0 2px; }
+
         .text-end { text-align: right; }
         .text-center { text-align: center; }
         .text-negative { color: #dc3545; font-weight: bold; }
@@ -100,30 +107,33 @@
     <div class="header">
         <div class="brand">WH3 Reportes</div>
         <h1>REPORTE KPI – CUMPLIMIENTO DEL PLAN</h1>
-        <p>REPORTE DIARIO</p>
+        <p>REPORTE SEMANAL / DIARIO</p>
     </div>
 
     <div class="meta-row">
-        {{ \Carbon\Carbon::parse($fecha_plan)->format('d/m/Y') }} &nbsp;|&nbsp;
-        Generado: {{ $fecha_generacion ?? now()->format('d/m/Y H:i') }} &nbsp;|&nbsp;
-        Contenedores: {{ $contenedores_completados }}/{{ $contenedores_planificados }} ({{ number_format($capacidad_operativa, 2) }}%)
+        @if(count($semanas) > 0)
+            {{ \Carbon\Carbon::parse($semanas[0]['inicio'])->format('d/m/Y') }}
+            al {{ \Carbon\Carbon::parse($semanas[count($semanas)-1]['fin'])->format('d/m/Y') }}
+        @endif
+        &nbsp;|&nbsp;
+        Generado: {{ $fecha_generacion ?? now()->format('d/m/Y H:i') }}
     </div>
 
     <div class="summary-bar">
         <table>
             <tr>
-                <td><span class="label">Fecha del Plan</span><span class="value">{{ \Carbon\Carbon::parse($fecha_plan)->format('d/m/Y') }}</span></td>
-                <td><span class="label">Cont. Planificados</span><span class="value">{{ $contenedores_planificados }}</span></td>
-                <td><span class="label">Cont. Completados</span><span class="value">{{ $contenedores_completados }}</span></td>
-                <td><span class="label">Capacidad Operativa</span><span class="value">{{ number_format($capacidad_operativa, 2) }}%</span></td>
-                <td><span class="label">Estado</span><span class="value">{{ $estado_dia }}</span></td>
+                <td><span class="label">Semanas</span><span class="value">{{ count($semanas) }}</span></td>
+                <td><span class="label">Días</span><span class="value">{{ collect($semanas)->sum(fn($s) => count($s['dias'])) }}</span></td>
+                <td><span class="label">Ítems</span><span class="value">{{ $total_items_plan }}</span></td>
+                <td><span class="label">Cumpl. Semanal</span><span class="value">{{ number_format($cumplimiento_plan_porcentaje, 2) }}%</span></td>
+                <td><span class="label">Brecha</span><span class="value">{{ number_format(max(0, $requerido_valido - $enviado_efectivo), 0) }} unid.</span></td>
             </tr>
         </table>
     </div>
 
     {{-- HERO: KPI Principal con gráfica de barra CSS --}}
     <div class="hero-kpi">
-        <div class="hero-title">★ Cumplimiento del Plan <span>— KPI Principal</span></div>
+        <div class="hero-title">★ Cumplimiento del Plan — Semanal <span>(KPI Principal)</span></div>
 
         <div class="bar-container">
             @php $brecha = max(0, 100 - $cumplimiento_plan_porcentaje); @endphp
@@ -155,24 +165,21 @@
         </div>
 
         <div class="hero-sub">
-            Enviado Efectivo = suma de min(entregada, requerida) por item &nbsp;|&nbsp;
-            Requerido Válido = suma de requerida sin estado 0 ni 1
+            Enviado Efectivo = suma de min(entregada, requerida) por item | Requerido Válido = suma de requerida sin estado 0 ni 1
         </div>
     </div>
 
-    {{-- Comentario --}}
-    @if($contenedores_completados < $contenedores_planificados)
+    {{-- Comentario Semanal --}}
     <div class="comentario">
-        <strong>⚠ Comentario:</strong> {{ $comentario_automatico }}@if($observaciones) Causa principal: {{ $observaciones }}@endif
+        <strong>▼ Comentario del Sistema:</strong> @if($cumplimiento_plan_porcentaje >= 100)
+            El cumplimiento semanal alcanzó la meta. Enviado efectivo {{ number_format($enviado_efectivo, 0) }} de {{ number_format($requerido_valido, 0) }} unidades válidas.
+        @else
+            El cumplimiento semanal fue del {{ number_format($cumplimiento_plan_porcentaje, 2) }}% ({{ number_format($enviado_efectivo, 0) }} de {{ number_format($requerido_valido, 0) }} unidades válidas), quedando una brecha de {{ number_format(max(0, $requerido_valido - $enviado_efectivo), 0) }} unidades.
+        @endif
     </div>
-    @else
-    <div class="comentario success">
-        <strong>✔ Comentario:</strong> {{ $comentario_automatico }}@if($observaciones) Observaciones: {{ $observaciones }}@endif
-    </div>
-    @endif
 
-    {{-- Resumen General (sin protagonismo) --}}
-    <div class="section-title">RESUMEN GENERAL</div>
+    {{-- Resumen General Semanal --}}
+    <div class="section-title">RESUMEN GENERAL SEMANAL</div>
     <table class="info">
         <tr>
             <td><span class="lbl">Total Ítems</span><span class="num">{{ $total_items_plan }}</span></td>
@@ -222,70 +229,69 @@
         </tr>
     </table>
 
-    {{-- Detalle de Ítems --}}
-    <div class="section-title">DETALLE DE ÍTEMS DEL PLAN</div>
-    <div class="badges-row">
-        <span class="badge badge-green">{{ $total_completados_exactos }} Comp.</span>
-        <span class="badge badge-yellow">{{ $total_incompletos_operativos }} Incomp.</span>
-        <span class="badge badge-blue" style="opacity:.75;">{{ $total_enviados_de_mas }} Exc.</span>
-        <span class="badge badge-red">{{ $total_fuera_inventario }} F. Inv.</span>
-        <span class="badge badge-orange">{{ $total_agotados }} Agot.</span>
-        <span class="badge badge-gray">{{ $total_items_plan }} Total</span>
+    {{-- Cumplimiento por Día --}}
+    @foreach($semanas as $semana)
+    <div class="week-title">{{ $semana['label'] }} — {{ number_format($semana['metricas']['cumplimiento_plan_porcentaje'], 2) }}%</div>
+
+    @foreach($semana['dias'] as $dia)
+    <div class="day-row">
+        <div class="day-head">{{ ucfirst($dia['fecha_str']) }} — Cumplimiento: {{ number_format($dia['cumplimiento_plan_porcentaje'], 2) }}%</div>
+        <table class="detalle">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Descripción</th>
+                    <th>Req.</th>
+                    <th>Entr.</th>
+                    <th>Dif.</th>
+                    <th>KPI</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($dia['items'] as $item)
+                @if($item['estado_original'] !== '0' && $item['estado_original'] !== '1')
+                <tr>
+                    <td>{{ $item['codigo'] }}</td>
+                    <td style="text-align:left;">{{ $item['descripcion'] }}</td>
+                    <td class="text-end">{{ number_format($item['cantidad_requerida'], 0) }}</td>
+                    <td class="text-end">{{ number_format($item['cantidad_enviada'], 0) }}</td>
+                    <td class="text-end {{ $item['diferencia'] > 0 ? 'text-negative' : '' }}">{{ number_format($item['diferencia'], 0) }}</td>
+                    <td>
+                        @php
+                            $badgePdf = match($item['clasificacion_kpi']) {
+                                'Completado' => 'badge-green',
+                                'Incompleto Operativo' => 'badge-yellow',
+                                'Enviado de más' => 'badge-blue',
+                                'Fuera de Inventario' => 'badge-red',
+                                'Agotado' => 'badge-orange',
+                                default => 'badge-gray'
+                            };
+                        @endphp
+                        <span class="badge {{ $badgePdf }}">{{ $item['clasificacion_kpi'] }}</span>
+                    </td>
+                </tr>
+                @endif
+                @endforeach
+                @if(count(array_filter($dia['items'], fn($i) => $i['estado_original'] !== '0' && $i['estado_original'] !== '1')) === 0)
+                <tr><td colspan="6" style="color:#777;">Sin ítems válidos para el KPI en este día.</td></tr>
+                @endif
+            </tbody>
+        </table>
     </div>
+    @endforeach
+    @endforeach
 
-    <table class="detalle">
-        <thead>
-            <tr>
-                <th>Código</th>
-                <th>Descripción</th>
-                <th>Req.</th>
-                <th>Entr.</th>
-                <th>Dif.</th>
-                <th>KPI</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($items as $item)
-            @if($item['estado_original'] !== '0' && $item['estado_original'] !== '1')
-            <tr>
-                <td>{{ $item['codigo'] }}</td>
-                <td style="text-align:left;">{{ $item['descripcion'] }}</td>
-                <td class="text-end">{{ number_format($item['cantidad_requerida'], 0) }}</td>
-                <td class="text-end">{{ number_format($item['cantidad_enviada'], 0) }}</td>
-                <td class="text-end {{ $item['diferencia'] > 0 ? 'text-negative' : '' }}">{{ number_format($item['diferencia'], 0) }}</td>
-                <td>
-                    @php
-                        $badgePdf = match($item['clasificacion_kpi']) {
-                            'Completado' => 'badge-green',
-                            'Incompleto Operativo' => 'badge-yellow',
-                            'Enviado de más' => 'badge-blue',
-                            'Fuera de Inventario' => 'badge-red',
-                            'Agotado' => 'badge-orange',
-                            default => 'badge-gray'
-                        };
-                    @endphp
-                    <span class="badge {{ $badgePdf }}">{{ $item['clasificacion_kpi'] }}</span>
-                </td>
-            </tr>
-            @endif
-            @endforeach
-        </tbody>
-    </table>
-
-    {{-- Tabla de ítems sin inventario --}}
-    @php
-        $itemsSinStock = array_filter($items, fn($i) => $i['estado_original'] === '0' || $i['estado_original'] === '1');
-    @endphp
-    @if(count($itemsSinStock) > 0)
+    {{-- Tabla de ítems sin inventario (con fecha) --}}
+    @if(count($items_sin_stock) > 0)
     <div class="section-title" style="margin-top:18px;border:none;font-size:8pt;padding:4px 8px;background:#fff3e0;color:#92400e;border-radius:4px;">
-        ⚠
-        Nota importante: En la siguiente tabla se detallan los materiales que no pudieron ser despachados debido a la falta de inventario.
+        ⚠ Nota: Materiales que no pudieron ser despachados por falta de inventario, con la fecha en que se requerían.
     </div>
     <table class="detalle" style="margin-top:8px;">
         <thead>
             <tr>
                 <th>Código</th>
                 <th>Descripción</th>
+                <th>Fecha</th>
                 <th>Req.</th>
                 <th>Entr.</th>
                 <th>Dif.</th>
@@ -293,10 +299,11 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($itemsSinStock as $item)
+            @foreach($items_sin_stock as $item)
             <tr>
                 <td>{{ $item['codigo'] }}</td>
                 <td style="text-align:left;">{{ $item['descripcion'] }}</td>
+                <td>{{ $item['fecha_str'] }}</td>
                 <td class="text-end">{{ number_format($item['cantidad_requerida'], 0) }}</td>
                 <td class="text-end">{{ number_format($item['cantidad_enviada'], 0) }}</td>
                 <td class="text-end text-negative">{{ number_format($item['diferencia'], 0) }}</td>

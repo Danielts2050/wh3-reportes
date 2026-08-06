@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('page-title', 'KPI Cumplimiento del Plan')
-@section('page-description', 'Análisis de cumplimiento diario, clasificación KPI y capacidad operativa.')
+@section('page-description', 'Análisis de cumplimiento semanal y diario, clasificación KPI e impacto de inventario.')
 
 @section('content')
 
@@ -18,28 +18,16 @@
                 <code>Material | Descripción | Fecha | Cant. Requerida | Cant. Entregada | Pendiente | Status</code>
             </div>
             <div class="mt-2 small text-muted">
+                La columna <strong>Fecha</strong> se usa para agrupar los KPIs por semana y por día.
+                Ejemplo válido: <code>martes, 4 de agosto de 2026</code>
+            </div>
+            <div class="mt-2 small text-muted">
                 <strong>Status:</strong> 0 = Fuera de inventario, 1 = Agotado, vacío = Sin inconveniente
             </div>
         </div>
 
         <form method="POST" action="/kpi-cumplimiento-plan/procesar" id="form-kpi">
             @csrf
-
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <label class="form-label">Fecha del Plan</label>
-                    <input type="date" name="fecha_plan" class="form-control" required value="{{ old('fecha_plan', date('Y-m-d')) }}">
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Contenedores Completados</label>
-                    <input type="number" name="contenedores_completados" class="form-control" min="0" max="8" required value="{{ old('contenedores_completados', '') }}" id="contenedores_input">
-                    <small class="form-text">Objetivo diario: 8 contenedores</small>
-                </div>
-                <div class="col-md-4" id="observaciones_wrapper" style="display:none;">
-                    <label class="form-label">Observaciones / Motivo</label>
-                    <textarea name="observaciones" class="form-control" rows="2" placeholder="Motivo por el cual no se completaron los 8 contenedores...">{{ old('observaciones', '') }}</textarea>
-                </div>
-            </div>
 
             <div class="mb-3">
                 <label class="form-label">Datos desde Excel</label>
@@ -60,15 +48,6 @@
 
 @section('scripts')
 <script>
-document.getElementById('contenedores_input')?.addEventListener('input', function() {
-    const wrapper = document.getElementById('observaciones_wrapper');
-    if (parseInt(this.value) < 8 && this.value !== '') {
-        wrapper.style.display = 'block';
-    } else {
-        wrapper.style.display = 'none';
-    }
-});
-
 document.getElementById('form-kpi')?.addEventListener('submit', function() {
     if (typeof notifyInfo === 'function') {
         notifyInfo('Procesando reporte KPI...');

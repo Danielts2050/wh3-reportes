@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('page-title', 'Dashboard KPI – Cumplimiento del Plan')
-@section('page-description', 'Reporte generado para {{ $fecha_plan }}')
+@section('page-description', 'Reporte semanal y diario de cumplimiento')
 
 @section('content')
 
@@ -15,9 +15,6 @@
         <form method="POST" action="/kpi-cumplimiento-plan/exportar-pdf" id="form-export-pdf">
             @csrf
             <input type="hidden" name="datos" value="{{ $datos }}">
-            <input type="hidden" name="fecha_plan" value="{{ $fecha_plan }}">
-            <input type="hidden" name="contenedores_completados" value="{{ $contenedores_completados }}">
-            <input type="hidden" name="observaciones" value="{{ $observaciones }}">
             <button class="btn btn-danger" id="btnExportarPdf">
                 <i class="fa-solid fa-file-pdf"></i> Exportar PDF
             </button>
@@ -25,37 +22,39 @@
     </div>
 </div>
 
-{{-- A) Barra de Resumen Rápido --}}
+{{-- A) Resumen Semanal (KPI principal) --}}
 <div class="kpi-header-bar">
     <div class="kpi-header-item">
-        <span class="kpi-header-label"><i class="fa-regular fa-calendar"></i> Fecha del Plan</span>
-        <span class="kpi-header-value">{{ \Carbon\Carbon::parse($fecha_plan)->format('d/m/Y') }}</span>
+        <span class="kpi-header-label"><i class="fa-regular fa-calendar-days"></i> Semanas detectadas</span>
+        <span class="kpi-header-value">{{ count($semanas) }}</span>
     </div>
     <div class="kpi-header-item">
-        <span class="kpi-header-label"><i class="fa-solid fa-boxes-stacked"></i> Cont. Planificados</span>
-        <span class="kpi-header-value">{{ $contenedores_planificados }}</span>
+        <span class="kpi-header-label"><i class="fa-regular fa-sun"></i> Días del reporte</span>
+        <span class="kpi-header-value">{{ collect($semanas)->sum(fn($s) => count($s['dias'])) }}</span>
     </div>
     <div class="kpi-header-item">
-        <span class="kpi-header-label"><i class="fa-solid fa-check-circle"></i> Cont. Completados</span>
-        <span class="kpi-header-value">{{ $contenedores_completados }}</span>
+        <span class="kpi-header-label"><i class="fa-solid fa-calendar"></i> Rango</span>
+        <span class="kpi-header-value">
+            @if(count($semanas) > 0)
+                {{ \Carbon\Carbon::parse($semanas[0]['inicio'])->format('d/m') }} – {{ \Carbon\Carbon::parse($semanas[count($semanas)-1]['fin'])->format('d/m/Y') }}
+            @else
+                —
+            @endif
+        </span>
     </div>
     <div class="kpi-header-item">
-        <span class="kpi-header-label"><i class="fa-solid fa-gauge-high"></i> Capacidad Operativa</span>
-        <span class="kpi-header-value kpi-value-{{ $capacidad_operativa < 100 ? 'warning' : 'success' }}">{{ number_format($capacidad_operativa, 2) }}%</span>
-    </div>
-    <div class="kpi-header-item">
-        <span class="kpi-header-label"><i class="fa-solid fa-flag"></i> Estado del Día</span>
-        <span class="kpi-badge kpi-badge-{{ $estado_dia === 'Completo' ? 'success' : 'warning' }}">● {{ $estado_dia }}</span>
+        <span class="kpi-header-label"><i class="fa-solid fa-flag"></i> Cumplimiento Semanal</span>
+        <span class="kpi-badge kpi-badge-{{ $cumplimiento_plan_porcentaje < 100 ? 'warning' : 'success' }}">● {{ number_format($cumplimiento_plan_porcentaje, 2) }}%</span>
     </div>
 </div>
 
-{{-- B) Tarjetas de Métricas Clave --}}
+{{-- B) Tarjetas de Métricas Clave (semanales) --}}
 <div class="kpi-resumen-rapido">
     <div class="kpi-stat-card">
         <div class="stat-icon" style="color:#2e7d32;"><i class="fa-solid fa-list"></i></div>
         <div class="stat-value">{{ $total_items_plan }}</div>
         <div class="stat-label">Total Ítems</div>
-        <div class="stat-sub">del Plan</div>
+        <div class="stat-sub">del reporte</div>
     </div>
     <div class="kpi-stat-card">
         <div class="stat-icon" style="color:#1565c0;"><i class="fa-solid fa-box"></i></div>
@@ -78,7 +77,7 @@
     <div class="kpi-stat-card kpi-stat-primary">
         <div class="stat-icon" style="color:#fff;"><i class="fa-solid fa-star"></i></div>
         <div class="stat-value">{{ number_format($cumplimiento_plan_porcentaje, 2) }}%</div>
-        <div class="stat-label">Cumpl. del Plan</div>
+        <div class="stat-label">Cumpl. Semanal</div>
         <div class="stat-sub">Efectivo / Válido</div>
     </div>
     <div class="kpi-stat-card">
@@ -105,9 +104,49 @@
     </div>
 </div>
 
-{{-- D) Gráficos - 3 Columnas --}}
+{{-- D) Cumplimiento por Día --}}
+<div class="kpi-semana-block">
+    <div class="kpi-semana-title">
+        <i class="fa-solid fa-calendar-week"></i> Cumplimiento por Día
+    </div>
+
+    @foreach($semanas as $semana)
+    <div class="kpi-semana">
+        <div class="kpi-semana-head">
+            <div>
+                <i class="fa-solid fa-calendar-day"></i> {{ $semana['label'] }}
+            </div>
+            <span class="kpi-semana-kpi">
+                Semana: <strong>{{ number_format($semana['metricas']['cumplimiento_plan_porcentaje'], 2) }}%</strong>
+            </span>
+        </div>
+        <div class="kpi-day-grid">
+            @foreach($semana['dias'] as $dia)
+            <div class="kpi-day">
+                <div class="kpi-day-top">
+                    <span class="kpi-day-name">{{ ucfirst($dia['fecha_str']) }}</span>
+                    <span class="kpi-day-badge {{ $dia['cumplimiento_plan_porcentaje'] >= 100 ? 'kpi-badge-success' : 'kpi-badge-warning' }}">
+                        {{ number_format($dia['cumplimiento_plan_porcentaje'], 2) }}%
+                    </span>
+                </div>
+                <div class="kpi-day-bar">
+                    <div class="kpi-day-fill" style="width: {{ max($dia['cumplimiento_plan_porcentaje'], 1) }}%;"></div>
+                </div>
+                <div class="kpi-day-stats">
+                    <span title="Ítems"><i class="fa-solid fa-list"></i> {{ $dia['total_items'] }}</span>
+                    <span title="Requerido"><i class="fa-solid fa-box"></i> {{ number_format($dia['requerido'], 0) }}</span>
+                    <span title="Enviado"><i class="fa-solid fa-truck"></i> {{ number_format($dia['enviado'], 0) }}</span>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endforeach
+</div>
+
+{{-- E) Gráficos - 2 Columnas --}}
 <div class="row g-4 mb-4">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <div class="kpi-chart-card">
             <div class="kpi-chart-title"><i class="fa-solid fa-chart-pie"></i> Cumplimiento Operativo</div>
             <div class="kpi-chart-subtitle">(Ítems trabajables)</div>
@@ -117,7 +156,7 @@
             <div class="kpi-chart-footer">Total Ítems trabajables: <strong>{{ $items_trabajables }}</strong></div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-6">
         <div class="kpi-chart-card">
             <div class="kpi-chart-title"><i class="fa-solid fa-triangle-exclamation"></i> Inconvenientes</div>
             <div class="kpi-chart-subtitle">(No afectan el KPI)</div>
@@ -130,42 +169,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="kpi-chart-card">
-            <div class="kpi-chart-title"><i class="fa-solid fa-truck-fast"></i> Contenedores</div>
-            <div class="kpi-chart-subtitle">Objetivo: 8 contenedores</div>
-            <div class="chart-container">
-                <canvas id="chartContenedores"></canvas>
-            </div>
-            <div class="kpi-chart-footer">
-                Capacidad: <strong>{{ number_format($capacidad_operativa, 2) }}%</strong>
-            </div>
-        </div>
-    </div>
 </div>
-
-{{-- E) Comentario Automático + Observaciones --}}
-@if($contenedores_completados < $contenedores_planificados)
-<div class="kpi-comentario alert alert-warning">
-    <div class="d-flex align-items-start gap-3">
-        <i class="fa-solid fa-triangle-exclamation fa-xl mt-1"></i>
-        <div>
-            <strong>Comentario del Sistema</strong>
-            <p class="mb-0 mt-1">{{ $comentario_automatico }}@if($observaciones) Causa principal: {{ $observaciones }}@endif</p>
-        </div>
-    </div>
-</div>
-@else
-<div class="kpi-comentario alert alert-success">
-    <div class="d-flex align-items-start gap-3">
-        <i class="fa-solid fa-circle-check fa-xl mt-1"></i>
-        <div>
-            <strong>Comentario del Sistema</strong>
-            <p class="mb-0 mt-1">{{ $comentario_automatico }}@if($observaciones) Observaciones: {{ $observaciones }}@endif</p>
-        </div>
-    </div>
-</div>
-@endif
 
 {{-- F) Tabla Detalle de Ítems del Plan --}}
 <div class="kpi-table-section">
@@ -182,7 +186,6 @@
         <span class="kpi-badge-item kpi-badge-total"><i class="fa-solid fa-cubes"></i> {{ $total_items_plan }} Total</span>
     </div>
 
-    {{-- Tabla de ítems válidos (sin estado 0 ni 1) --}}
     <h6 style="padding:12px 20px 6px;font-size:13px;font-weight:700;color:var(--purple-700);margin:0;">Ítems considerados para el KPI</h6>
     <div class="table-responsive">
         <table class="kpi-table">
@@ -190,6 +193,7 @@
                 <tr>
                     <th>Código</th>
                     <th>Descripción</th>
+                    <th>Fecha</th>
                     <th>Cant. Requerida</th>
                     <th>Cant. Entregada</th>
                     <th>Diferencia</th>
@@ -203,6 +207,7 @@
                 <tr>
                     <td class="font-monospace">{{ $item['codigo'] }}</td>
                     <td>{{ $item['descripcion'] }}</td>
+                    <td>{{ $item['fecha_str'] }}</td>
                     <td class="text-end">{{ number_format($item['cantidad_requerida'], 0) }}</td>
                     <td class="text-end">{{ number_format($item['cantidad_enviada'], 0) }}</td>
                     <td class="text-end {{ $item['diferencia'] > 0 ? 'kpi-text-negative' : '' }}">{{ number_format($item['diferencia'], 0) }}</td>
@@ -229,14 +234,11 @@
         </table>
     </div>
 
-    {{-- Tabla de ítems con estado 0 o 1 --}}
-    @php
-        $itemsSinStock = array_filter($items, fn($i) => $i['estado_original'] === '0' || $i['estado_original'] === '1');
-    @endphp
-    @if(count($itemsSinStock) > 0)
+    {{-- Tabla de ítems con estado 0 o 1 (sin stock, con fecha) --}}
+    @if(count($items_sin_stock) > 0)
     <div class="alert alert-warning" style="border-radius:0;margin:16px 20px 8px;font-size:13px;padding:12px 16px;">
         <i class="fa-solid fa-triangle-exclamation"></i>
-        <strong>Nota importante:</strong> En la siguiente tabla se detallan los materiales que no pudieron ser despachados debido a la falta de inventario.
+        <strong>Nota importante:</strong> En la siguiente tabla se detallan los materiales que no pudieron ser despachados debido a la falta de inventario, con la fecha en la que se requerían.
     </div>
     <h6 style="padding:0 20px 6px;font-size:13px;font-weight:700;color:var(--red-700);margin:0;">Ítems sin inventario (excluidos del KPI)</h6>
     <div class="table-responsive" style="padding-bottom:16px;">
@@ -245,6 +247,7 @@
                 <tr>
                     <th>Código</th>
                     <th>Descripción</th>
+                    <th>Fecha</th>
                     <th>Cant. Requerida</th>
                     <th>Cant. Entregada</th>
                     <th>Diferencia</th>
@@ -253,10 +256,11 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($itemsSinStock as $item)
+                @foreach($items_sin_stock as $item)
                 <tr>
                     <td class="font-monospace">{{ $item['codigo'] }}</td>
                     <td>{{ $item['descripcion'] }}</td>
+                    <td>{{ $item['fecha_str'] }}</td>
                     <td class="text-end">{{ number_format($item['cantidad_requerida'], 0) }}</td>
                     <td class="text-end">{{ number_format($item['cantidad_enviada'], 0) }}</td>
                     <td class="text-end kpi-text-negative">{{ number_format($item['diferencia'], 0) }}</td>
@@ -351,7 +355,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const c = getChartColors();
 
-    // Chart 1: Cumplimiento Operativo (Donut)
     const ctx1 = document.getElementById('chartOperativo')?.getContext('2d');
     if (ctx1) {
         new Chart(ctx1, {
@@ -393,7 +396,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Chart 2: Inconvenientes (Donut)
     const ctx2 = document.getElementById('chartInconvenientes')?.getContext('2d');
     if (ctx2) {
         new Chart(ctx2, {
@@ -435,47 +437,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Chart 3: Contenedores (Bar)
-    const ctx3 = document.getElementById('chartContenedores')?.getContext('2d');
-    if (ctx3) {
-        new Chart(ctx3, {
-            type: 'bar',
-            data: {
-                labels: ['Completados', 'No Completados', 'Objetivo'],
-                datasets: [{
-                    data: [{{ $contenedores_completados }}, {{ $contenedores_no_completados }}, {{ $contenedores_planificados }}],
-                    backgroundColor: [c.green, c.gray, c.dark],
-                    borderRadius: 6,
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                scales: {
-                    y: { beginAtZero: true, max: 10, ticks: { stepSize: 1 } }
-                },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: function(ctx) {
-                                return ctx.parsed.y + ' contenedores';
-                            }
-                        }
-                    },
-                    datalabels: {
-                        anchor: 'end',
-                        align: 'end',
-                        color: '#333',
-                        font: { weight: 'bold', size: 14 },
-                        formatter: (value) => value + ''
-                    }
-                }
-            }
-        });
-    }
-
-    // Chart 4: Distribución (Pie)
     const ctx4 = document.getElementById('chartDistribucion')?.getContext('2d');
     if (ctx4) {
         new Chart(ctx4, {
@@ -517,7 +478,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Chart 5: Impacto Inventario (Horizontal Bar)
     const ctx5 = document.getElementById('chartImpacto')?.getContext('2d');
     if (ctx5) {
         const reqAfectado = {{ $requerido_afectado_inventario }};
