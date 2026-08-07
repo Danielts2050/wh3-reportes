@@ -1,0 +1,178 @@
+.m9-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    padding: 10px 16px;
+    background: #fff;
+    border: 1px solid #e6e2f5;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+
+.m9-toolbar-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--purple-700, #31245e);
+}
+
+.m9-toolbar-title i {
+    color: var(--purple-500, #6f5cc2);
+    margin-right: 6px;
+}
+
+.m9-toolbar-actions .btn { display: inline-flex; align-items: center; }
+
+.m9-resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.m9-stat {
+    position: relative;
+    background: #fff;
+    border: 1px solid #e6e2f5;
+    border-radius: 10px;
+    padding: 16px 14px;
+    text-align: center;
+    overflow: hidden;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.m9-stat::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--green-500, #2e7d32);
+}
+
+.m9-stat:nth-child(2)::before { background: var(--blue-500, #1565c0); }
+.m9-stat:nth-child(3)::before { background: var(--purple-500, #6f5cc2); }
+.m9-stat:nth-child(4)::before { background: var(--orange-500, #e65100); }
+.m9-stat:nth-child(5)::before { background: var(--purple-300, #9b8fe0); }
+
+.m9-stat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(109,92,194,.15);
+}
+
+.m9-stat-icon { font-size: 18px; margin-bottom: 6px; }
+.m9-stat-value {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--purple-700, #31245e);
+    line-height: 1.1;
+}
+.m9-stat-label { font-size: 11px; color: #666; margin-top: 4px; }
+
+.m9-stat-primary { background: linear-gradient(135deg, #31245e, #6f5cc2); border-color: transparent; }
+.m9-stat-primary::before { background: #fff; }
+.m9-stat-primary .m9-stat-value,
+.m9-stat-primary .m9-stat-label { color: #fff; }
+.m9-stat-primary .m9-stat-icon { color: #fff !important; }
+
+.m9-explicativo { margin-bottom: 20px; }
+
+.m9-section {
+    background: #fff;
+    border: 1px solid #e6e2f5;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.m9-section-title {
+    padding: 12px 16px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #31245e, #6f5cc2);
+}
+
+.m9-section-title i { margin-right: 6px; }
+
+.m9-section .table-responsive { padding: 4px; }
+
+.m9-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    padding: 16px;
+}
+
+.m9-grid-day {
+    background: #faf9ff;
+}
+
+.m9-day {
+    background: #fff;
+    border: 1px solid #e6e2f5;
+    border-radius: 8px;
+    padding: 12px;
+    transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+.m9-day:hover {
+    transform: translateY(-2px);
+    border-color: var(--purple-500, #6f5cc2);
+    box-shadow: 0 4px 12px rgba(109,92,194,.15);
+}
+
+.m9-day-head {
+    font-weight: 700;
+    color: var(--purple-700, #31245e);
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.m9-day-body { font-size: 12px; color: #555; line-height: 1.7; }
+.m9-day-body i { color: var(--purple-500, #6f5cc2); width: 16px; }
+
+.m9-table { width: 100%; border-collapse: collapse; }
+.m9-table th {
+    background: #31245e;
+    color: #fff;
+    padding: 8px 10px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+}
+.m9-table td { padding: 8px 10px; border-bottom: 1px solid #eee; font-size: 12px; }
+.m9-table tbody tr:nth-child(even) { background: #faf9ff; }
+.m9-table tbody tr:hover { background: #f0ecfd; }
+
+.m9-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #eee;
+    color: #444;
+}
+
+.m9-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+}
+.m9-badge-ok { background: var(--green-500, #2e7d32); }
+.m9-badge-q { background: var(--orange-500, #ed6c02); }
+
+.chart-container { position: relative; height: 210px; padding: 8px; }
+
+@media (max-width: 768px) {
+    .m9-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) {
+    .m9-grid { grid-template-columns: 1fr; }
+    .m9-resumen { grid-template-columns: 1fr 1fr; }
+}

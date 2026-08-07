@@ -4,6 +4,7 @@ use App\Http\Controllers\DistribucionLotesController;
 use App\Http\Controllers\HorasExtrasController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\KpiCumplimientoPlanController;
+use App\Http\Controllers\Materiales911Controller;
 use App\Http\Controllers\PlanificadorController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\ResumenPaletasController;
@@ -34,6 +35,10 @@ Route::post('/distribucion-lotes/exportar', [DistribucionLotesController::class,
 Route::get('/kpi-cumplimiento-plan', [KpiCumplimientoPlanController::class, 'index']);
 Route::post('/kpi-cumplimiento-plan/procesar', [KpiCumplimientoPlanController::class, 'procesar']);
 Route::post('/kpi-cumplimiento-plan/exportar-pdf', [KpiCumplimientoPlanController::class, 'exportarPdf']);
+
+Route::get('/materiales-911', [Materiales911Controller::class, 'index']);
+Route::post('/materiales-911/procesar', [Materiales911Controller::class, 'procesar']);
+Route::post('/materiales-911/exportar-pdf', [Materiales911Controller::class, 'exportarPdf']);
 
 Route::get('/planificador', [PlanificadorController::class, 'index']);
 Route::post('/planificador/procesar', [PlanificadorController::class, 'procesar']);

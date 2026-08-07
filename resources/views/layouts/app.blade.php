@@ -79,6 +79,12 @@
                 KPI Cumplimiento
             </a>
 
+            <a href="/materiales-911"
+               class="nav-item {{ request()->is('materiales-911*') ? 'active':'' }}">
+                <i class="fa-solid fa-bell-concierge"></i>
+                Materiales 911
+            </a>
+
             <a href="/horas-extras"
                class="nav-item {{ request()->is('horas-extras*') ? 'active':'' }}">
                 <i class="fa-solid fa-clock"></i>
